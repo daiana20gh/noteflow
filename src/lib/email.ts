@@ -9,7 +9,8 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendVerificationEmail(to: string, name: string, token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   const link = `${baseUrl}/api/auth/verify?token=${token}`;
 
   await transporter.sendMail({
