@@ -1,6 +1,14 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { DocumentSummary } from "@/lib/documents";
+
+const NAV = [
+  { href: "/dashboard", icon: "🏠", label: "Dashboard" },
+  { href: "/templates", icon: "🎨", label: "Templates" },
+  { href: "/contact", icon: "✉️", label: "Contact" },
+];
 
 type Props = {
   documents: DocumentSummary[];
@@ -17,10 +25,33 @@ export default function Sidebar({
   onNew,
   onDelete,
 }: Props) {
+  const pathname = usePathname();
+
   return (
     <div className="w-64 h-full bg-white dark:bg-[#111] border-r border-gray-200 dark:border-gray-800 flex flex-col">
-      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
-        <h2 className="text-xl font-bold">NoteFlow</h2>
+      <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-800">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <span className="text-xl">✨</span>
+          <span className="text-lg font-bold">NoteFlow</span>
+        </Link>
+      </div>
+
+      {/* Nav links */}
+      <div className="px-2 py-2 border-b border-gray-100 dark:border-gray-800">
+        {NAV.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition ${
+              pathname.startsWith(item.href)
+                ? "bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-medium"
+                : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
+            }`}
+          >
+            <span className="text-sm">{item.icon}</span>
+            {item.label}
+          </Link>
+        ))}
       </div>
 
       <div className="flex items-center justify-between px-4 py-2">

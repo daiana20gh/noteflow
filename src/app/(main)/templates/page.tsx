@@ -9,6 +9,8 @@ const TEMPLATES = [
     icon: "📋",
     name: "Meeting Notes",
     description: "Structure your meeting discussions and action items",
+    grad: "from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
+    accent: "text-blue-700 dark:text-blue-300",
     content: [
       { id: "1", type: "heading", props: { level: 1, textColor: "default", backgroundColor: "default", textAlignment: "left" }, content: [{ type: "text", text: "Meeting Notes", styles: {} }], children: [] },
       { id: "2", type: "paragraph", props: { textColor: "default", backgroundColor: "default", textAlignment: "left" }, content: [{ type: "text", text: "Date: ", styles: { bold: true } }, { type: "text", text: new Date().toLocaleDateString(), styles: {} }], children: [] },
@@ -89,6 +91,33 @@ const TEMPLATES = [
   },
 ];
 
+const TEMPLATE_COLORS: Record<string, { grad: string; text: string }> = {
+  "meeting-notes": {
+    grad: "from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
+    text: "text-blue-700 dark:text-blue-300",
+  },
+  "project-plan": {
+    grad: "from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30",
+    text: "text-amber-700 dark:text-amber-300",
+  },
+  "weekly-journal": {
+    grad: "from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30",
+    text: "text-violet-700 dark:text-violet-300",
+  },
+  "todo-list": {
+    grad: "from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30",
+    text: "text-emerald-700 dark:text-emerald-300",
+  },
+  "study-notes": {
+    grad: "from-rose-50 to-pink-50 dark:from-rose-950/30 dark:to-pink-950/30",
+    text: "text-rose-700 dark:text-rose-300",
+  },
+  blank: {
+    grad: "from-gray-50 to-slate-50 dark:from-gray-900/50 dark:to-slate-900/50",
+    text: "text-gray-600 dark:text-gray-400",
+  },
+};
+
 export default function TemplatesPage() {
   const router = useRouter();
 
@@ -107,20 +136,23 @@ export default function TemplatesPage() {
   return (
     <div className="h-full overflow-y-auto p-8 max-w-5xl mx-auto w-full">
       <h1 className="text-3xl font-bold mb-1">Templates</h1>
-      <p className="text-gray-500 mb-8">Pick a template to get started quickly.</p>
+      <p className="text-gray-500 dark:text-gray-400 mb-8">Pick a template to get started quickly.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {TEMPLATES.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => handleUseTemplate(t)}
-            className="bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-gray-800 p-6 text-left hover:border-gray-400 dark:hover:border-gray-600 hover:shadow-sm transition group"
-          >
-            <span className="text-3xl mb-3 block">{t.icon}</span>
-            <p className="font-semibold group-hover:underline">{t.name}</p>
-            <p className="text-sm text-gray-500 mt-1">{t.description}</p>
-          </button>
-        ))}
+        {TEMPLATES.map((t) => {
+          const colors = TEMPLATE_COLORS[t.id] ?? TEMPLATE_COLORS.blank;
+          return (
+            <button
+              key={t.id}
+              onClick={() => handleUseTemplate(t)}
+              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 p-6 text-left hover:scale-[1.02] hover:shadow-md transition group`}
+            >
+              <span className="text-3xl mb-3 block">{t.icon}</span>
+              <p className={`font-semibold ${colors.text} group-hover:underline`}>{t.name}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -26,7 +26,7 @@ export default function Navbar({ userName }: Props) {
   };
 
   return (
-    <nav className="h-14 bg-white dark:bg-[#111] border-b border-gray-200 dark:border-gray-800 flex items-center px-4 gap-4 shrink-0 z-50">
+    <nav className="md:hidden h-14 bg-white dark:bg-[#111] border-b border-gray-200 dark:border-gray-800 flex items-center px-4 gap-4 shrink-0 z-50">
       <Link href="/dashboard" className="text-lg font-bold mr-4 shrink-0">
         NoteFlow
       </Link>

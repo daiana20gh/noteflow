@@ -2,6 +2,46 @@ import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
+const QUICK_START = [
+  {
+    icon: "✅",
+    name: "Todo List",
+    href: "/templates",
+    bg: "bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60",
+    text: "text-emerald-700 dark:text-emerald-300",
+  },
+  {
+    icon: "📓",
+    name: "Journal",
+    href: "/templates",
+    bg: "bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-950/60",
+    text: "text-violet-700 dark:text-violet-300",
+  },
+  {
+    icon: "📋",
+    name: "Meeting Notes",
+    href: "/templates",
+    bg: "bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/60",
+    text: "text-blue-700 dark:text-blue-300",
+  },
+  {
+    icon: "📊",
+    name: "Project Plan",
+    href: "/templates",
+    bg: "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60",
+    text: "text-amber-700 dark:text-amber-300",
+  },
+];
+
+const DOC_ACCENT = [
+  "border-l-violet-400",
+  "border-l-blue-400",
+  "border-l-emerald-400",
+  "border-l-amber-400",
+  "border-l-rose-400",
+  "border-l-sky-400",
+];
+
 export default async function DashboardPage() {
   const session = await getSession();
 
@@ -17,65 +57,111 @@ export default async function DashboardPage() {
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  const greetingEmoji = hour < 12 ? "☀️" : hour < 18 ? "👋" : "🌙";
 
   return (
-    <div className="h-full overflow-y-auto p-8 max-w-5xl mx-auto w-full">
-      <h1 className="text-3xl font-bold mb-1">
-        {greeting}, {session!.name.split(" ")[0]} 👋
-      </h1>
-      <p className="text-gray-500 mb-8">Here&apos;s what&apos;s happening with your notes.</p>
+    <div className="h-full overflow-y-auto">
+      {/* Gradient banner */}
+      <div className="bg-gradient-to-r from-violet-600 to-violet-500 dark:from-violet-800 dark:to-violet-700 px-8 py-10">
+        <h1 className="text-2xl font-bold text-white mb-1">
+          {greeting}, {session!.name.split(" ")[0]} {greetingEmoji}
+        </h1>
+        <p className="text-violet-200 text-sm">What would you like to do today?</p>
+      </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-10">
-        <div className="bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-          <p className="text-sm text-gray-500 mb-1">Total Documents</p>
-          <p className="text-4xl font-bold">{totalDocs}</p>
-        </div>
-        <div className="bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-gray-800 p-6">
-          <p className="text-sm text-gray-500 mb-1">Quick Actions</p>
-          <div className="flex gap-2 mt-2 flex-wrap">
+      <div className="p-6 max-w-5xl mx-auto w-full space-y-8">
+        {/* Stats row — floats over the banner */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 -mt-6">
+          <div className="bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Your documents</p>
+            <p className="text-3xl font-bold">{totalDocs}</p>
+          </div>
+
+          <div className="bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">New note</p>
             <Link
               href="/documents"
-              className="text-sm px-3 py-1.5 bg-black text-white dark:bg-white dark:text-black rounded-lg"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white text-sm rounded-xl transition font-medium"
             >
-              + New Document
+              + Create
             </Link>
+          </div>
+
+          <div className="bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-gray-800 p-5 shadow-sm col-span-2 sm:col-span-1">
+            <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">Templates</p>
             <Link
               href="/templates"
-              className="text-sm px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="inline-flex items-center gap-1.5 px-4 py-2 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm rounded-xl transition"
             >
-              Browse Templates
+              Browse →
             </Link>
           </div>
         </div>
-      </div>
 
-      {/* Recent documents */}
-      <h2 className="text-lg font-semibold mb-4">Recent Documents</h2>
-      {recentDocs.length === 0 ? (
-        <div className="bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-gray-800 p-12 text-center text-gray-400">
-          <p className="text-4xl mb-3">📄</p>
-          <p>No documents yet.</p>
-          <Link href="/documents" className="text-sm text-black dark:text-white underline mt-2 inline-block">
-            Create your first one →
-          </Link>
+        {/* Quick start */}
+        <div>
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            Quick Start
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {QUICK_START.map((t) => (
+              <Link
+                key={t.name}
+                href={t.href}
+                className={`${t.bg} rounded-2xl p-4 text-center transition`}
+              >
+                <span className="text-2xl block mb-2">{t.icon}</span>
+                <span className={`text-xs font-semibold ${t.text}`}>{t.name}</span>
+              </Link>
+            ))}
+          </div>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {recentDocs.map((doc) => (
-            <Link
-              key={doc.id}
-              href={`/documents?id=${doc.id}`}
-              className="bg-white dark:bg-[#111] rounded-xl border border-gray-200 dark:border-gray-800 p-5 hover:border-gray-400 dark:hover:border-gray-600 transition group"
-            >
-              <p className="font-medium truncate group-hover:underline">{doc.title || "Untitled"}</p>
-              <p className="text-xs text-gray-400 mt-2">
-                {new Date(doc.updatedAt).toLocaleDateString()}
-              </p>
-            </Link>
-          ))}
+
+        {/* Recent documents */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Recent Documents
+            </h2>
+            {recentDocs.length > 0 && (
+              <Link href="/documents" className="text-xs text-violet-600 dark:text-violet-400 hover:underline">
+                View all →
+              </Link>
+            )}
+          </div>
+
+          {recentDocs.length === 0 ? (
+            <div className="bg-white dark:bg-[#111] rounded-2xl border border-dashed border-gray-300 dark:border-gray-700 p-12 text-center">
+              <p className="text-4xl mb-3">📝</p>
+              <p className="text-gray-500 mb-2">No documents yet</p>
+              <Link href="/documents" className="text-sm text-violet-600 dark:text-violet-400 hover:underline">
+                Create your first document →
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {recentDocs.map((doc, i) => (
+                <Link
+                  key={doc.id}
+                  href={`/documents?id=${doc.id}`}
+                  className={`bg-white dark:bg-[#111] rounded-2xl border border-gray-200 dark:border-gray-800 border-l-4 ${DOC_ACCENT[i % DOC_ACCENT.length]} p-5 hover:shadow-md transition group`}
+                >
+                  <p className="font-medium truncate group-hover:text-violet-600 dark:group-hover:text-violet-400 transition">
+                    {doc.title || "Untitled"}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-2">
+                    {new Date(doc.updatedAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
