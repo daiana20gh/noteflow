@@ -8,6 +8,28 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+export async function sendPasswordResetEmail(to: string, name: string, token: string) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ??
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+  const link = `${baseUrl}/reset-password?token=${token}`;
+
+  await transporter.sendMail({
+    from: `"NoteFlow" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Reset your NoteFlow password",
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;background:#fff;border-radius:12px;border:1px solid #e5e7eb">
+        <h1 style="font-size:24px;font-weight:700;margin:0 0 4px">NoteFlow</h1>
+        <p style="color:#6b7280;margin:0 0 24px">Password reset request</p>
+        <p style="margin:0 0 8px">Hi ${name},</p>
+        <p style="margin:0 0 24px;color:#374151">Click the button below to reset your password. This link expires in 1 hour.</p>
+        <a href="${link}" style="display:inline-block;padding:12px 24px;background:#000;color:#fff;border-radius:8px;text-decoration:none;font-weight:500">Reset my password</a>
+        <p style="margin:24px 0 0;font-size:12px;color:#9ca3af">If you didn't request a password reset, you can safely ignore this email.</p>
+      </div>
+    `,
+  });
+}
+
 export async function sendVerificationEmail(to: string, name: string, token: string) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");

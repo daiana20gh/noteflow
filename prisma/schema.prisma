@@ -14,6 +14,8 @@ model User {
   password          String
   emailVerified     Boolean    @default(false)
   verificationToken String?    @unique
+  resetToken        String?    @unique
+  resetTokenExpiry  DateTime?
   documents         Document[]
   createdAt         DateTime   @default(now())
 }
