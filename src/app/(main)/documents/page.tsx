@@ -4,23 +4,40 @@ import { useState, useEffect, useCallback } from "react";
 import Sidebar from "@/components/Sidebar";
 import MainContent from "@/components/MainContent";
 import RightPanel from "@/components/RightPanel";
-import { listDocuments, createDocument, deleteDocument } from "@/lib/api";
-import type { DocumentSummary } from "@/lib/documents";
+import {
+  listDocuments,
+  createDocument,
+  deleteDocument,
+  listTags,
+  createTag,
+  deleteTag,
+} from "@/lib/api";
+import type { DocumentSummary, Tag } from "@/lib/documents";
 import { useSearchParams } from "next/navigation";
 
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<DocumentSummary[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [aiText, setAiText] = useState("");
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const searchParams = useSearchParams();
 
+  // Load tags once
   useEffect(() => {
-    listDocuments().then((docs) => {
-      setDocuments(docs);
-      const idFromUrl = searchParams.get("id");
-      if (idFromUrl) setSelectedId(idFromUrl);
-    }).catch(console.error);
-  }, [searchParams]);
+    listTags().then(setTags).catch(console.error);
+  }, []);
+
+  // Reload documents when tag filter changes
+  useEffect(() => {
+    listDocuments(selectedTagId ?? undefined)
+      .then((docs) => {
+        setDocuments(docs);
+        const idFromUrl = searchParams.get("id");
+        if (idFromUrl && !selectedTagId) setSelectedId(idFromUrl);
+      })
+      .catch(console.error);
+  }, [selectedTagId, searchParams]);
 
   const handleNew = useCallback(async () => {
     const doc = await createDocument();
@@ -38,6 +55,25 @@ export default function DocumentsPage() {
     setDocuments((prev) => prev.map((d) => (d.id === id ? { ...d, title } : d)));
   }, []);
 
+  const handleTagsChange = useCallback((id: string, newTags: Tag[]) => {
+    setDocuments((prev) => prev.map((d) => (d.id === id ? { ...d, tags: newTags } : d)));
+  }, []);
+
+  const handleCreateTag = useCallback(async (name: string, color: string) => {
+    const tag = await createTag(name, color);
+    setTags((prev) => [...prev, tag]);
+  }, []);
+
+  const handleDeleteTag = useCallback(async (id: string) => {
+    await deleteTag(id);
+    setTags((prev) => prev.filter((t) => t.id !== id));
+    if (selectedTagId === id) setSelectedTagId(null);
+    // Remove tag from all documents in local state
+    setDocuments((prev) =>
+      prev.map((d) => ({ ...d, tags: d.tags.filter((t) => t.id !== id) }))
+    );
+  }, [selectedTagId]);
+
   return (
     <div className="flex h-full">
       <Sidebar
@@ -46,10 +82,17 @@ export default function DocumentsPage() {
         onSelect={setSelectedId}
         onNew={handleNew}
         onDelete={handleDelete}
+        tags={tags}
+        selectedTagId={selectedTagId}
+        onSelectTag={setSelectedTagId}
+        onCreateTag={handleCreateTag}
+        onDeleteTag={handleDeleteTag}
       />
       <MainContent
         selectedId={selectedId}
+        allTags={tags}
         onTitleChange={handleTitleChange}
+        onTagsChange={handleTagsChange}
         onSendToAI={setAiText}
       />
       <RightPanel initialText={aiText} onTextConsumed={() => setAiText("")} />

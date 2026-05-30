@@ -10,9 +10,10 @@ import { useEffect, useRef } from "react";
 type Props = {
   initialContent?: Block[];
   onChange: (blocks: Block[]) => void;
+  fontFamily?: string;
 };
 
-export default function Editor({ initialContent, onChange }: Props) {
+export default function Editor({ initialContent, onChange, fontFamily }: Props) {
   const editor = useCreateBlockNote({
     initialContent: initialContent?.length ? initialContent : undefined,
   });
@@ -27,9 +28,11 @@ export default function Editor({ initialContent, onChange }: Props) {
   }, [editor]);
 
   return (
-    <BlockNoteView
-      editor={editor}
-      className="flex-1 min-h-0"
-    />
+    <div style={fontFamily ? { fontFamily } : undefined}>
+      <BlockNoteView
+        editor={editor}
+        className="flex-1 min-h-0"
+      />
+    </div>
   );
 }

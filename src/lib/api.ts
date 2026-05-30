@@ -1,7 +1,9 @@
-import type { Document, DocumentSummary } from "./documents";
+import type { Document, DocumentSummary, Tag } from "./documents";
+import type { CalendarEvent } from "./calendar";
 
-export async function listDocuments(): Promise<DocumentSummary[]> {
-  const res = await fetch("/api/documents");
+export async function listDocuments(tagId?: string): Promise<DocumentSummary[]> {
+  const url = tagId ? `/api/documents?tagId=${encodeURIComponent(tagId)}` : "/api/documents";
+  const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch documents");
   return res.json();
 }
@@ -12,7 +14,7 @@ export async function getDocument(id: string): Promise<Document> {
   return res.json();
 }
 
-export async function createDocument(title = "Untitled"): Promise<Document> {
+export async function createDocument(title = "Untitled"): Promise<DocumentSummary> {
   const res = await fetch("/api/documents", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,7 +26,7 @@ export async function createDocument(title = "Untitled"): Promise<Document> {
 
 export async function updateDocument(
   id: string,
-  data: { title?: string; content?: unknown }
+  data: { title?: string; content?: unknown; tagIds?: string[]; fontFamily?: string; emoji?: string }
 ): Promise<Document> {
   const res = await fetch(`/api/documents/${id}`, {
     method: "PUT",
@@ -40,10 +42,64 @@ export async function deleteDocument(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to delete document");
 }
 
-export async function aiComplete(
-  text: string,
-  action: string
-): Promise<string> {
+export async function listTags(): Promise<Tag[]> {
+  const res = await fetch("/api/tags");
+  if (!res.ok) throw new Error("Failed to fetch tags");
+  return res.json();
+}
+
+export async function createTag(name: string, color: string): Promise<Tag> {
+  const res = await fetch("/api/tags", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, color }),
+  });
+  if (!res.ok) throw new Error("Failed to create tag");
+  return res.json();
+}
+
+export async function deleteTag(id: string): Promise<void> {
+  const res = await fetch(`/api/tags/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete tag");
+}
+
+export async function listEvents(month: string): Promise<CalendarEvent[]> {
+  const res = await fetch(`/api/events?month=${encodeURIComponent(month)}`);
+  if (!res.ok) throw new Error("Failed to fetch events");
+  return res.json();
+}
+
+export async function createEvent(
+  data: { title: string; date: string; hour: number; notes?: string; color?: string }
+): Promise<CalendarEvent> {
+  const res = await fetch("/api/events", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to create event");
+  return res.json();
+}
+
+export async function updateEvent(
+  id: string,
+  data: { title?: string; notes?: string; color?: string; hour?: number }
+): Promise<CalendarEvent> {
+  const res = await fetch(`/api/events/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Failed to update event");
+  return res.json();
+}
+
+export async function deleteEvent(id: string): Promise<void> {
+  const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete event");
+}
+
+export async function aiComplete(text: string, action: string): Promise<string> {
   const res = await fetch("/api/ai", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

@@ -17,13 +17,50 @@ model User {
   resetToken        String?    @unique
   resetTokenExpiry  DateTime?
   documents         Document[]
+  tags              Tag[]
+  calendarEvents    CalendarEvent[]
   createdAt         DateTime   @default(now())
 }
 
 model Document {
+  id         String        @id @default(cuid())
+  title      String        @default("Untitled")
+  content    Json?
+  fontFamily String        @default("default")
+  emoji      String        @default("📄")
+  userId     String?
+  user       User?         @relation(fields: [userId], references: [id])
+  tags       DocumentTag[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+}
+
+model Tag {
+  id        String        @id @default(cuid())
+  name      String
+  color     String        @default("#6366f1")
+  userId    String?
+  user      User?         @relation(fields: [userId], references: [id])
+  documents DocumentTag[]
+  createdAt DateTime      @default(now())
+}
+
+model DocumentTag {
+  documentId String
+  tagId      String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([documentId, tagId])
+}
+
+model CalendarEvent {
   id        String   @id @default(cuid())
-  title     String   @default("Untitled")
-  content   Json?
+  title     String
+  date      String
+  hour      Int
+  notes     String   @default("")
+  color     String   @default("#6366f1")
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
