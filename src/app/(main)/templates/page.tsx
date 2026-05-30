@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createDocument } from "@/lib/api";
 
@@ -120,17 +121,26 @@ const TEMPLATE_COLORS: Record<string, { grad: string; text: string }> = {
 
 export default function TemplatesPage() {
   const router = useRouter();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handleUseTemplate = async (template: typeof TEMPLATES[0]) => {
-    const doc = await createDocument(template.name === "Blank Page" ? "Untitled" : template.name);
-    if (template.content.length > 0) {
-      await fetch(`/api/documents/${doc.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: template.content }),
-      });
+    if (loadingId) return;
+    setLoadingId(template.id);
+    try {
+      const doc = await createDocument(template.name === "Blank Page" ? "Untitled" : template.name);
+      if (template.content.length > 0) {
+        await fetch(`/api/documents/${doc.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: template.content }),
+        });
+      }
+      router.push(`/documents?id=${doc.id}`);
+    } catch (e) {
+      console.error("Failed to create template:", e);
+      alert("Could not create the page. Please try again.");
+      setLoadingId(null);
     }
-    router.push(`/documents?id=${doc.id}`);
   };
 
   return (
@@ -145,10 +155,13 @@ export default function TemplatesPage() {
             <button
               key={t.id}
               onClick={() => handleUseTemplate(t)}
-              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 p-6 text-left hover:scale-[1.02] hover:shadow-md transition group`}
+              disabled={loadingId !== null}
+              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 p-6 text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait`}
             >
-              <span className="text-3xl mb-3 block">{t.icon}</span>
-              <p className={`font-semibold ${colors.text} group-hover:underline`}>{t.name}</p>
+              <span className="text-3xl mb-3 block">{loadingId === t.id ? "⏳" : t.icon}</span>
+              <p className={`font-semibold ${colors.text} group-hover:underline`}>
+                {loadingId === t.id ? "Creating…" : t.name}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>
             </button>
           );

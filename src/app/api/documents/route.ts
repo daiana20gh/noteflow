@@ -39,23 +39,29 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSession();
-  const body = await request.json().catch(() => ({}));
-  const doc = await prisma.document.create({
-    data: {
-      title: body.title ?? "Untitled",
-      content: body.content ?? undefined,
-      userId: session?.userId ?? null,
-    },
-    select: {
-      id: true,
-      title: true,
-      emoji: true,
-      content: true,
-      fontFamily: true,
-      updatedAt: true,
-      tags: TAG_SELECT,
-    },
-  });
-  return Response.json(flattenTags(doc), { status: 201 });
+  try {
+    const session = await getSession();
+    const body = await request.json().catch(() => ({}));
+    const doc = await prisma.document.create({
+      data: {
+        title: body.title ?? "Untitled",
+        content: body.content ?? undefined,
+        userId: session?.userId ?? null,
+      },
+      select: {
+        id: true,
+        title: true,
+        emoji: true,
+        content: true,
+        fontFamily: true,
+        updatedAt: true,
+        tags: TAG_SELECT,
+      },
+    });
+    return Response.json(flattenTags(doc), { status: 201 });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("POST /api/documents error:", msg);
+    return Response.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

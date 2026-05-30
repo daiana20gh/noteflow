@@ -40,9 +40,14 @@ export default function DocumentsPage() {
   }, [selectedTagId, searchParams]);
 
   const handleNew = useCallback(async () => {
-    const doc = await createDocument();
-    setDocuments((prev) => [doc, ...prev]);
-    setSelectedId(doc.id);
+    try {
+      const doc = await createDocument();
+      setDocuments((prev) => [doc, ...prev]);
+      setSelectedId(doc.id);
+    } catch (e) {
+      console.error("Failed to create document:", e);
+      alert("Could not create a new page. Please try again.");
+    }
   }, []);
 
   const handleDelete = useCallback(async (id: string) => {
