@@ -39,6 +39,10 @@ export default function CalendarPage() {
     setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
   };
 
+  const handleGoToDate = (year: number, month: number) => {
+    setCurrentDate(new Date(year, month, 1));
+  };
+
   const handleAddEvent = async (data: { title: string; hour: number; notes: string; color: string }) => {
     try {
       const ev = await createEvent({ ...data, date: selectedDate });
@@ -87,6 +91,7 @@ export default function CalendarPage() {
               onSelectDate={setSelectedDate}
               onPrevMonth={handlePrevMonth}
               onNextMonth={handleNextMonth}
+              onGoToDate={handleGoToDate}
             />
           </div>
         </div>
