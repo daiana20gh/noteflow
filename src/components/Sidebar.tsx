@@ -28,6 +28,8 @@ type Props = {
   onSelectTag: (id: string | null) => void;
   onCreateTag: (name: string, color: string) => void;
   onDeleteTag: (id: string) => void;
+  selectedDocTags: Tag[];
+  onDocTagToggle: (tagId: string) => void;
 };
 
 export default function Sidebar({
@@ -41,6 +43,8 @@ export default function Sidebar({
   onSelectTag,
   onCreateTag,
   onDeleteTag,
+  selectedDocTags,
+  onDocTagToggle,
 }: Props) {
   const pathname = usePathname();
   const [showTagForm, setShowTagForm] = useState(false);
@@ -110,7 +114,10 @@ export default function Sidebar({
               autoFocus
               value={newTagName}
               onChange={(e) => setNewTagName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleCreateTag(); if (e.key === "Escape") setShowTagForm(false); }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreateTag();
+                if (e.key === "Escape") setShowTagForm(false);
+              }}
               placeholder="Tag name"
               className="w-full text-xs px-2 py-1.5 rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1a1a1a] outline-none focus:ring-1 focus:ring-violet-400"
             />
@@ -119,7 +126,9 @@ export default function Sidebar({
                 <button
                   key={c}
                   onClick={() => setNewTagColor(c)}
-                  className={`w-5 h-5 rounded-full border-2 transition ${newTagColor === c ? "border-gray-800 dark:border-white scale-110" : "border-transparent"}`}
+                  className={`w-5 h-5 rounded-full border-2 transition ${
+                    newTagColor === c ? "border-gray-800 dark:border-white scale-110" : "border-transparent"
+                  }`}
                   style={{ backgroundColor: c }}
                 />
               ))}
@@ -141,6 +150,13 @@ export default function Sidebar({
           </div>
         )}
 
+        {/* Tag hint when a document is open */}
+        {selectedId && tags.length > 0 && (
+          <p className="text-[10px] text-gray-400 px-4 pb-1">
+            Click + / ✓ to assign to open page
+          </p>
+        )}
+
         <div className="px-2 space-y-0.5">
           {selectedTagId && (
             <button
@@ -150,29 +166,47 @@ export default function Sidebar({
               ✕ Clear filter
             </button>
           )}
-          {tags.map((tag) => (
-            <div
-              key={tag.id}
-              className={`group flex items-center justify-between rounded-md px-2 py-1 cursor-pointer text-sm transition ${
-                selectedTagId === tag.id
-                  ? "bg-gray-100 dark:bg-gray-800"
-                  : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
-              }`}
-              onClick={() => onSelectTag(selectedTagId === tag.id ? null : tag.id)}
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                <span className="truncate text-xs text-gray-700 dark:text-gray-300">{tag.name}</span>
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); onDeleteTag(tag.id); }}
-                className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 text-xs px-1 shrink-0"
-                title="Delete tag"
+          {tags.map((tag) => {
+            const isOnDoc = selectedDocTags.some((t) => t.id === tag.id);
+            return (
+              <div
+                key={tag.id}
+                className={`group flex items-center justify-between rounded-md px-2 py-1 cursor-pointer text-sm transition ${
+                  selectedTagId === tag.id
+                    ? "bg-gray-100 dark:bg-gray-800"
+                    : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                }`}
+                onClick={() => onSelectTag(selectedTagId === tag.id ? null : tag.id)}
               >
-                ✕
-              </button>
-            </div>
-          ))}
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
+                  <span className="truncate text-xs text-gray-700 dark:text-gray-300">{tag.name}</span>
+                </div>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  {selectedId && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onDocTagToggle(tag.id); }}
+                      title={isOnDoc ? "Remove from page" : "Add to page"}
+                      className={`w-5 h-5 flex items-center justify-center rounded text-[11px] transition ${
+                        isOnDoc
+                          ? "text-violet-500 dark:text-violet-400"
+                          : "text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 hover:text-violet-500"
+                      }`}
+                    >
+                      {isOnDoc ? "✓" : "+"}
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onDeleteTag(tag.id); }}
+                    className="w-5 h-5 flex items-center justify-center rounded opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 text-xs transition"
+                    title="Delete tag"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            );
+          })}
           {tags.length === 0 && !showTagForm && (
             <p className="text-xs text-gray-400 px-2 py-1">No tags yet</p>
           )}

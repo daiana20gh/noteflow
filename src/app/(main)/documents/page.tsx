@@ -11,6 +11,7 @@ import {
   listTags,
   createTag,
   deleteTag,
+  updateDocument,
 } from "@/lib/api";
 import type { DocumentSummary, Tag } from "@/lib/documents";
 import { useSearchParams } from "next/navigation";
@@ -24,12 +25,10 @@ export default function DocumentsPage() {
   const [showAI, setShowAI] = useState(false);
   const searchParams = useSearchParams();
 
-  // Load tags once
   useEffect(() => {
     listTags().then(setTags).catch(console.error);
   }, []);
 
-  // Reload documents when tag filter changes
   useEffect(() => {
     listDocuments(selectedTagId ?? undefined)
       .then((docs) => {
@@ -74,11 +73,30 @@ export default function DocumentsPage() {
     await deleteTag(id);
     setTags((prev) => prev.filter((t) => t.id !== id));
     if (selectedTagId === id) setSelectedTagId(null);
-    // Remove tag from all documents in local state
     setDocuments((prev) =>
       prev.map((d) => ({ ...d, tags: d.tags.filter((t) => t.id !== id) }))
     );
   }, [selectedTagId]);
+
+  // Assign/remove a tag on the current document from the sidebar
+  const handleDocTagToggle = useCallback(async (tagId: string) => {
+    if (!selectedId) return;
+    const doc = documents.find((d) => d.id === selectedId);
+    if (!doc) return;
+    const hasTag = doc.tags.some((t) => t.id === tagId);
+    const newTagIds = hasTag
+      ? doc.tags.filter((t) => t.id !== tagId).map((t) => t.id)
+      : [...doc.tags.map((t) => t.id), tagId];
+    const newTags = tags.filter((t) => newTagIds.includes(t.id));
+    setDocuments((prev) =>
+      prev.map((d) => (d.id === selectedId ? { ...d, tags: newTags } : d))
+    );
+    updateDocument(selectedId, { tagIds: newTagIds }).catch(console.error);
+  }, [selectedId, documents, tags]);
+
+  const selectedDocTags = selectedId
+    ? (documents.find((d) => d.id === selectedId)?.tags ?? [])
+    : [];
 
   return (
     <div className="flex h-full">
@@ -93,10 +111,13 @@ export default function DocumentsPage() {
         onSelectTag={setSelectedTagId}
         onCreateTag={handleCreateTag}
         onDeleteTag={handleDeleteTag}
+        selectedDocTags={selectedDocTags}
+        onDocTagToggle={handleDocTagToggle}
       />
       <MainContent
         selectedId={selectedId}
         allTags={tags}
+        syncedTags={selectedDocTags}
         onTitleChange={handleTitleChange}
         onTagsChange={handleTagsChange}
         onSendToAI={setAiText}
