@@ -6,8 +6,6 @@ import { getDocument, updateDocument } from "@/lib/api";
 import type { Document, Tag } from "@/lib/documents";
 import type { Block } from "@blocknote/core";
 
-
-
 const Editor = dynamic(() => import("./Editor"), { ssr: false });
 
 const EMOJI_OPTIONS = ["📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥"];
@@ -32,10 +30,6 @@ type Props = {
   onTitleChange: (id: string, title: string) => void;
   onTagsChange: (id: string, tags: Tag[]) => void;
   onSendToAI: (text: string) => void;
-  globalFont: string;
-  onFontChange: (font: string) => void;
-  globalFontSize: string;
-  onFontSizeChange: (size: string) => void;
 };
 
 export default function MainContent({
@@ -44,15 +38,14 @@ export default function MainContent({
   onTitleChange,
   onTagsChange,
   onSendToAI,
-  globalFont,
-  onFontChange,
-  globalFontSize,
-  onFontSizeChange,
 }: Props) {
   const [doc, setDoc] = useState<Document | null>(null);
   const [loading, setLoading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
+  const [activeFont, setActiveFont] = useState("default");
+  const [activeFontSize, setActiveFontSize] = useState("16");
+  const editorRef = useRef<any>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -64,7 +57,6 @@ export default function MainContent({
       .finally(() => setLoading(false));
   }, [selectedId]);
 
-  // Close pickers on outside click
   useEffect(() => {
     const handler = () => { setShowEmojiPicker(false); setShowTagPicker(false); };
     document.addEventListener("click", handler);
@@ -101,7 +93,17 @@ export default function MainContent({
   };
 
   const handleFontChange = (fontKey: string) => {
-    onFontChange(fontKey);
+    const font = FONTS.find((f) => f.key === fontKey) ?? FONTS[0];
+    setActiveFont(fontKey);
+    editorRef.current?.addStyles({ fontFamily: font.style });
+    editorRef.current?.focus();
+  };
+
+  const handleFontSizeChange = (sizeKey: string) => {
+    const size = FONT_SIZES.find((s) => s.key === sizeKey) ?? FONT_SIZES[2];
+    setActiveFontSize(sizeKey);
+    editorRef.current?.addStyles({ fontSize: size.style });
+    editorRef.current?.focus();
   };
 
   const handleTagToggle = (tag: Tag) => {
@@ -131,8 +133,7 @@ export default function MainContent({
 
   if (!doc) return null;
 
-  const currentFont = FONTS.find((f) => f.key === globalFont) ?? FONTS[0];
-  const currentSize = FONT_SIZES.find((s) => s.key === globalFontSize) ?? FONT_SIZES[2];
+  const currentFont = FONTS.find((f) => f.key === activeFont) ?? FONTS[0];
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -171,7 +172,7 @@ export default function MainContent({
           style={{ fontFamily: currentFont.style }}
         />
 
-        {/* Font + Tags toolbar */}
+        {/* Font + Size + Tags toolbar */}
         <div className="flex items-center gap-3 flex-wrap">
           {/* Font selector */}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
@@ -180,7 +181,7 @@ export default function MainContent({
                 key={f.key}
                 onClick={() => handleFontChange(f.key)}
                 className={`text-xs px-2.5 py-1 rounded-md transition ${
-                  globalFont === f.key
+                  activeFont === f.key
                     ? "bg-white dark:bg-gray-600 shadow-sm font-medium text-gray-900 dark:text-gray-100"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 }`}
@@ -196,9 +197,9 @@ export default function MainContent({
             {FONT_SIZES.map((s) => (
               <button
                 key={s.key}
-                onClick={() => onFontSizeChange(s.key)}
+                onClick={() => handleFontSizeChange(s.key)}
                 className={`text-xs px-2.5 py-1 rounded-md transition ${
-                  globalFontSize === s.key
+                  activeFontSize === s.key
                     ? "bg-white dark:bg-gray-600 shadow-sm font-medium text-gray-900 dark:text-gray-100"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 }`}
@@ -226,7 +227,6 @@ export default function MainContent({
               </button>
             ))}
 
-            {/* Add tag */}
             {allTags.length > 0 && (
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <button
@@ -267,8 +267,7 @@ export default function MainContent({
           key={doc.id}
           initialContent={(doc.content as Block[] | null) ?? undefined}
           onChange={handleContentChange}
-          fontFamily={currentFont.style}
-          fontSize={currentSize.style}
+          onEditorReady={(editor) => { editorRef.current = editor; }}
         />
       </div>
 
