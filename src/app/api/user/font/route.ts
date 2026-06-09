@@ -10,7 +10,7 @@ export async function GET() {
   });
   return Response.json({
     fontFamily: user?.fontFamily ?? "default",
-    fontSize: user?.fontSize ?? "medium",
+    fontSize: user?.fontSize ?? "16",
   });
 }
 

@@ -24,7 +24,7 @@ export default function DocumentsPage() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
   const [globalFont, setGlobalFont] = useState("default");
-  const [globalFontSize, setGlobalFontSize] = useState("medium");
+  const [globalFontSize, setGlobalFontSize] = useState("16");
   const searchParams = useSearchParams();
 
   // Load tags and user preferences once

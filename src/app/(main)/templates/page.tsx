@@ -166,7 +166,7 @@ export default function TemplatesPage() {
               key={t.id}
               onClick={() => handleUseTemplate(t)}
               disabled={loadingId !== null}
-              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait`}
+              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait flex flex-col`}
             >
               <div className="relative w-full h-36 overflow-hidden">
                 <Image
@@ -176,7 +176,7 @@ export default function TemplatesPage() {
                   className={`object-cover ${t.imagePosition ?? "object-center"}`}
                 />
               </div>
-              <div className="p-4 min-h-[80px]">
+              <div className="p-4 flex-1">
                 <p className={`font-semibold ${colors.text} group-hover:underline`}>
                   {loadingId === t.id ? "Creating…" : t.name}
                 </p>

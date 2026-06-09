@@ -19,10 +19,11 @@ const FONTS = [
 ];
 
 const FONT_SIZES = [
-  { key: "small", label: "S", style: "13px" },
-  { key: "medium", label: "M", style: "15px" },
-  { key: "large", label: "L", style: "18px" },
-  { key: "xlarge", label: "XL", style: "21px" },
+  { key: "12", label: "12", style: "12px" },
+  { key: "14", label: "14", style: "14px" },
+  { key: "16", label: "16", style: "16px" },
+  { key: "18", label: "18", style: "18px" },
+  { key: "20", label: "20", style: "20px" },
 ];
 
 type Props = {
@@ -131,7 +132,7 @@ export default function MainContent({
   if (!doc) return null;
 
   const currentFont = FONTS.find((f) => f.key === globalFont) ?? FONTS[0];
-  const currentSize = FONT_SIZES.find((s) => s.key === globalFontSize) ?? FONT_SIZES[1];
+  const currentSize = FONT_SIZES.find((s) => s.key === globalFontSize) ?? FONT_SIZES[2];
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">

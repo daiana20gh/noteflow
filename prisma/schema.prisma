@@ -17,7 +17,7 @@ model User {
   resetToken        String?    @unique
   resetTokenExpiry  DateTime?
   fontFamily        String     @default("default")
-  fontSize          String     @default("medium")
+  fontSize          String     @default("16")
   documents         Document[]
   tags              Tag[]
   calendarEvents    CalendarEvent[]

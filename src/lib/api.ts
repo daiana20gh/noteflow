@@ -103,7 +103,7 @@ export async function getUserPreferences(): Promise<{ fontFamily: string; fontSi
   const res = await fetch("/api/user/font");
   if (!res.ok) return { fontFamily: "default", fontSize: "medium" };
   const data = await res.json();
-  return { fontFamily: data.fontFamily ?? "default", fontSize: data.fontSize ?? "medium" };
+  return { fontFamily: data.fontFamily ?? "default", fontSize: data.fontSize ?? "16" };
 }
 
 export async function updateUserPreferences(prefs: { fontFamily?: string; fontSize?: string }): Promise<void> {
