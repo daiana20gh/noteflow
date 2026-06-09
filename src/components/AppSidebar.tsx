@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 const NAV = [
-  { href: "/dashboard", icon: "🏠", label: "Dashboard" },
-  { href: "/documents", icon: "📝", label: "Documents" },
-  { href: "/calendar", icon: "📅", label: "Calendar" },
-  { href: "/templates", icon: "🎨", label: "Templates" },
-  { href: "/contact", icon: "✉️", label: "Contact" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/documents", label: "Documents" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "/templates", label: "Templates" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function AppSidebar({ userName }: { userName: string }) {
@@ -28,7 +28,6 @@ export default function AppSidebar({ userName }: { userName: string }) {
       {/* Logo */}
       <div className="px-5 py-5">
         <Link href="/dashboard" className="flex items-center gap-2.5">
-          <span className="text-xl">✨</span>
           <span className="text-lg font-bold">NoteFlow</span>
         </Link>
       </div>
@@ -45,7 +44,6 @@ export default function AppSidebar({ userName }: { userName: string }) {
                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
             }`}
           >
-            <span className="text-base">{item.icon}</span>
             {item.label}
           </Link>
         ))}

@@ -31,18 +31,18 @@ const DOC_COLORS = [
   { key: "black", value: "#111111" },
 ];
 
+// BlockNote textColor uses named values only — hex is for the swatch display
 const TEXT_COLORS = [
-  { key: "default", label: "Default", value: "default" },
-  { key: "red", label: "Red", value: "#ef4444" },
-  { key: "orange", label: "Orange", value: "#f97316" },
-  { key: "yellow", label: "Yellow", value: "#ca8a04" },
-  { key: "green", label: "Green", value: "#16a34a" },
-  { key: "blue", label: "Blue", value: "#2563eb" },
-  { key: "violet", label: "Violet", value: "#7c3aed" },
-  { key: "pink", label: "Pink", value: "#db2777" },
-  { key: "gray", label: "Gray", value: "#6b7280" },
-  { key: "black", label: "Black", value: "#111111" },
-  { key: "white", label: "White", value: "#f9fafb" },
+  { key: "default", label: "Default", value: "default", hex: "" },
+  { key: "gray",    label: "Gray",    value: "gray",    hex: "#9b9a97" },
+  { key: "brown",   label: "Brown",   value: "brown",   hex: "#64473a" },
+  { key: "red",     label: "Red",     value: "red",     hex: "#e03e3e" },
+  { key: "orange",  label: "Orange",  value: "orange",  hex: "#d9730d" },
+  { key: "yellow",  label: "Yellow",  value: "yellow",  hex: "#dfab01" },
+  { key: "green",   label: "Green",   value: "green",   hex: "#4d6461" },
+  { key: "blue",    label: "Blue",    value: "blue",    hex: "#0b6e99" },
+  { key: "purple",  label: "Purple",  value: "purple",  hex: "#6940a5" },
+  { key: "pink",    label: "Pink",    value: "pink",    hex: "#ad1a72" },
 ];
 
 const FONTS = [
@@ -154,6 +154,13 @@ export default function MainContent({
   const editorRef = useRef<any>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // refs for click-outside detection
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+  const colorPickerRef = useRef<HTMLDivElement>(null);
+  const tagPickerRef = useRef<HTMLDivElement>(null);
+  const tablePickerRef = useRef<HTMLDivElement>(null);
+  const textColorPickerRef = useRef<HTMLDivElement>(null);
+
   // ── load doc ──────────────────────────────────────────────────────────────
   useEffect(() => {
     if (!selectedId) { setDoc(null); return; }
@@ -192,17 +199,18 @@ export default function MainContent({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doc?.id]); // re-subscribe when document changes
 
-  // ── close pickers on outside click ───────────────────────────────────────
+  // ── close pickers when clicking outside their wrapper ────────────────────
   useEffect(() => {
-    const handler = () => {
-      setShowEmojiPicker(false);
-      setShowColorPicker(false);
-      setShowTagPicker(false);
-      setShowTablePicker(false);
-      setShowTextColorPicker(false);
+    const handler = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(t)) setShowEmojiPicker(false);
+      if (colorPickerRef.current && !colorPickerRef.current.contains(t)) setShowColorPicker(false);
+      if (tagPickerRef.current && !tagPickerRef.current.contains(t)) setShowTagPicker(false);
+      if (tablePickerRef.current && !tablePickerRef.current.contains(t)) setShowTablePicker(false);
+      if (textColorPickerRef.current && !textColorPickerRef.current.contains(t)) setShowTextColorPicker(false);
     };
-    document.addEventListener("click", handler);
-    return () => document.removeEventListener("click", handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   // ── save ──────────────────────────────────────────────────────────────────
@@ -259,8 +267,7 @@ export default function MainContent({
   const applyInlineStyle = (styleKey: string) => {
     const editor = editorRef.current;
     if (!editor) return;
-    const current = editor.getActiveStyles?.() ?? {};
-    editor.addStyles({ [styleKey]: !current[styleKey] } as any);
+    editor.toggleStyles({ [styleKey]: true } as any);
     editor.focus();
   };
 
@@ -282,9 +289,9 @@ export default function MainContent({
     const editor = editorRef.current;
     if (!editor) return;
     if (color === "default") {
-      editor.addStyles({ textColor: false as any });
+      editor.removeStyles({ textColor: "" } as any);
     } else {
-      editor.addStyles({ textColor: color });
+      editor.addStyles({ textColor: color } as any);
     }
     editor.focus();
     setShowTextColorPicker(false);
@@ -372,10 +379,10 @@ export default function MainContent({
       <div className="px-16 pt-8 pb-3 space-y-2">
         {/* Emoji + Color */}
         <div className="flex items-center gap-2">
-          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+          <div ref={emojiPickerRef} className="relative inline-block">
             {doc.emoji ? (
               <button
-                onClick={() => { setShowEmojiPicker((v) => !v); setShowColorPicker(false); }}
+                onClick={() => setShowEmojiPicker((v) => !v)}
                 className="text-4xl hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-1 py-0.5 transition"
                 title="Change icon"
               >
@@ -383,7 +390,7 @@ export default function MainContent({
               </button>
             ) : (
               <button
-                onClick={() => { setShowEmojiPicker((v) => !v); setShowColorPicker(false); }}
+                onClick={() => setShowEmojiPicker((v) => !v)}
                 className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-2 py-1.5 transition"
               >
                 + Add icon
@@ -414,10 +421,10 @@ export default function MainContent({
             )}
           </div>
 
-          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+          <div ref={colorPickerRef} className="relative inline-block">
             <Tooltip label="Page color">
               <button
-                onClick={() => { setShowColorPicker((v) => !v); setShowEmojiPicker(false); }}
+                onClick={() => setShowColorPicker((v) => !v)}
                 className="w-7 h-7 rounded-full border-2 transition hover:scale-110"
                 style={doc.color
                   ? { backgroundColor: doc.color, borderColor: doc.color }
@@ -475,18 +482,15 @@ export default function MainContent({
             </button>
           ))}
 
-          <div className="relative" onClick={(e) => e.stopPropagation()}>
+          <div ref={tagPickerRef} className="relative">
             <button
-              onClick={(e) => { e.stopPropagation(); setShowTagPicker((v) => !v); }}
+              onClick={() => setShowTagPicker((v) => !v)}
               className="text-xs px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
             >
               + tag
             </button>
             {showTagPicker && (
-              <div
-                className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 min-w-40 space-y-0.5"
-                onClick={(e) => e.stopPropagation()}
-              >
+              <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 min-w-40 space-y-0.5">
                 {allTags.length === 0 ? (
                   <p className="text-xs text-gray-400 px-2 py-1">No tags — create one in the sidebar</p>
                 ) : (
@@ -495,7 +499,7 @@ export default function MainContent({
                     return (
                       <button
                         key={tag.id}
-                        onClick={(e) => { e.stopPropagation(); handleTagToggle(tag); }}
+                        onClick={() => handleTagToggle(tag)}
                         className={`w-full text-left flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs hover:bg-gray-50 dark:hover:bg-gray-800 transition ${active ? "font-medium" : ""}`}
                       >
                         <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
@@ -548,27 +552,24 @@ export default function MainContent({
                 <span className="line-through text-sm">S</span>
               </RibbonBtn>
             </Tooltip>
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <div ref={textColorPickerRef} className="relative">
               <Tooltip label="Text color">
                 <RibbonBtn
-                  onClick={(e) => { e.stopPropagation(); setShowTextColorPicker((v) => !v); setShowTablePicker(false); }}
+                  onClick={() => setShowTextColorPicker((v) => !v)}
                   active={showTextColorPicker}
                 >
                   <span className="flex flex-col items-center justify-center leading-none gap-0.5">
                     <span className="text-sm font-bold">A</span>
                     <span
                       className="block w-4 h-0.5 rounded"
-                      style={{ backgroundColor: (activeStyles.textColor && activeStyles.textColor !== "default") ? activeStyles.textColor : "#6b7280" }}
+                      style={{ backgroundColor: TEXT_COLORS.find(c => c.value === activeStyles.textColor)?.hex ?? "#6b7280" }}
                     />
                   </span>
                 </RibbonBtn>
               </Tooltip>
               {showTextColorPicker && (
-                <div
-                  className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="grid grid-cols-4 gap-1.5">
+                <div className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2">
+                  <div className="grid grid-cols-5 gap-1.5">
                     {TEXT_COLORS.map((c) => (
                       <Tooltip key={c.key} label={c.label}>
                         <button
@@ -579,9 +580,9 @@ export default function MainContent({
                               ? "border-gray-700 dark:border-white scale-110"
                               : "border-transparent hover:border-gray-300"
                           }`}
-                          style={c.key === "default" ? { background: "linear-gradient(135deg, #e5e7eb 50%, #9ca3af 50%)" } : { backgroundColor: c.value, ...(c.key === "white" ? { border: "1px solid #d1d5db" } : {}) }}
+                          style={c.hex ? { backgroundColor: c.hex } : { background: "linear-gradient(135deg, #e5e7eb 50%, #9ca3af 50%)" }}
                         >
-                          {c.key === "default" && <span className="text-[8px] text-gray-700 font-bold">A</span>}
+                          {!c.hex && <span className="text-[8px] text-gray-700 font-bold">A</span>}
                         </button>
                       </Tooltip>
                     ))}
@@ -679,10 +680,10 @@ export default function MainContent({
 
           {/* Insert: Table */}
           <RibbonGroup label="Insert">
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <div ref={tablePickerRef} className="relative">
               <Tooltip label="Insert table">
                 <RibbonBtn
-                  onClick={(e) => { e.stopPropagation(); setShowTablePicker((v) => !v); }}
+                  onClick={() => setShowTablePicker((v) => !v)}
                   active={showTablePicker}
                 >
                   <span className="text-xs">⊞ Table</span>
@@ -691,7 +692,6 @@ export default function MainContent({
               {showTablePicker && (
                 <div
                   className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3"
-                  onClick={(e) => e.stopPropagation()}
                   onMouseLeave={() => setTableHover({ rows: 0, cols: 0 })}
                 >
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
