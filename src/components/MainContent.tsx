@@ -11,10 +11,8 @@ const Editor = dynamic(() => import("./Editor"), { ssr: false });
 // ─── Inline constants ─────────────────────────────────────────────────────────
 
 const EMOJI_OPTIONS = [
-  "📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥",
-  "📚", "🎨", "💻", "🎵", "🏆", "💼", "🌍", "🔬", "📅", "💬", "🎤", "🧠",
-  "🌈", "🏖️", "🎸", "🍕", "🚂", "🦁", "🐉", "🌸", "⭐", "🎃", "🧩", "💎",
-  "🔑", "🎭", "🧪", "🌙", "☀️", "🏔️", "🎲", "🛸", "🦋", "🎀", "🍀", "🔮",
+  "📄", "📝", "📌", "💡", "🚀", "🎯", "📊", "🗒️", "✅", "🔥","📚", "🎨",
+  "💻", "🎵", "💼", "🌍", "🔬", "📅", "🎤", "🧠", "🌙", "☀️", "🍀"
 ];
 
 const DOC_COLORS = [
@@ -589,8 +587,7 @@ export default function MainContent({
                     {TEXT_COLORS.map((c) => (
                       <Tooltip key={c.key} label={c.label}>
                         <button
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => handleTextColorChange(c.value)}
+                          onMouseDown={(e) => { e.preventDefault(); handleTextColorChange(c.value); }}
                           className={`w-7 h-7 rounded-full border-2 transition hover:scale-110 flex items-center justify-center ${
                             activeStyles.textColor === c.value
                               ? "border-gray-700 dark:border-white scale-110"
