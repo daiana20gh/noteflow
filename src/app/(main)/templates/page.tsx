@@ -44,7 +44,7 @@ const TEMPLATES = [
   {
     id: "weekly-journal",
     icon: "📓",
-    image: "/templates/journal.jpg",
+    image: "/templates/weekly.jpg",
     name: "Weekly Journal",
     description: "Reflect on your week and plan ahead",
     content: [
