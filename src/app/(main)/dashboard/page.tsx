@@ -113,8 +113,8 @@ export default async function DashboardPage() {
                 href={t.href}
                 className={`${t.bg} rounded-2xl overflow-hidden transition`}
               >
-                <div className="relative w-full h-32 overflow-hidden">
-                  <Image src={t.image} alt={t.name} fill className={`object-cover ${t.imagePosition ?? "object-center"}`} />
+                <div className="relative w-full h-44 overflow-hidden">
+                  <Image src={t.image} alt={t.name} fill className="object-contain object-top" />
                 </div>
                 <div className="p-3 text-center">
                   <span className={`text-xs font-semibold ${t.text}`}>{t.name}</span>

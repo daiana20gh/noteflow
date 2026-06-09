@@ -142,6 +142,8 @@ export default function MainContent({
   const [showTablePicker, setShowTablePicker] = useState(false);
   const [tableHover, setTableHover] = useState({ rows: 0, cols: 0 });
   const [showTextColorPicker, setShowTextColorPicker] = useState(false);
+  const [textColorPickerPos, setTextColorPickerPos] = useState({ top: 0, left: 0 });
+  const [tablePickerPos, setTablePickerPos] = useState({ top: 0, left: 0 });
 
   // Ribbon active state
   const [activeStyles, setActiveStyles] = useState<Record<string, any>>({});
@@ -375,6 +377,11 @@ export default function MainContent({
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
+      {/* Page color accent bar */}
+      {doc.color && (
+        <div className="h-1 w-full shrink-0" style={{ backgroundColor: doc.color }} />
+      )}
+
       {/* ── Document header ─────────────────────────────────────────────── */}
       <div className="px-16 pt-8 pb-3 space-y-2">
         {/* Emoji + Color */}
@@ -555,7 +562,13 @@ export default function MainContent({
             <div ref={textColorPickerRef} className="relative">
               <Tooltip label="Text color">
                 <RibbonBtn
-                  onClick={() => setShowTextColorPicker((v) => !v)}
+                  onClick={() => {
+                    if (!showTextColorPicker && textColorPickerRef.current) {
+                      const rect = textColorPickerRef.current.getBoundingClientRect();
+                      setTextColorPickerPos({ top: rect.bottom + 4, left: rect.left });
+                    }
+                    setShowTextColorPicker((v) => !v);
+                  }}
                   active={showTextColorPicker}
                 >
                   <span className="flex flex-col items-center justify-center leading-none gap-0.5">
@@ -568,7 +581,10 @@ export default function MainContent({
                 </RibbonBtn>
               </Tooltip>
               {showTextColorPicker && (
-                <div className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2">
+                <div
+                  style={{ position: "fixed", top: textColorPickerPos.top, left: textColorPickerPos.left }}
+                  className="z-50 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2"
+                >
                   <div className="grid grid-cols-5 gap-1.5">
                     {TEXT_COLORS.map((c) => (
                       <Tooltip key={c.key} label={c.label}>
@@ -683,7 +699,13 @@ export default function MainContent({
             <div ref={tablePickerRef} className="relative">
               <Tooltip label="Insert table">
                 <RibbonBtn
-                  onClick={() => setShowTablePicker((v) => !v)}
+                  onClick={() => {
+                    if (!showTablePicker && tablePickerRef.current) {
+                      const rect = tablePickerRef.current.getBoundingClientRect();
+                      setTablePickerPos({ top: rect.bottom + 4, left: rect.left });
+                    }
+                    setShowTablePicker((v) => !v);
+                  }}
                   active={showTablePicker}
                 >
                   <span className="text-xs">⊞ Table</span>
@@ -691,7 +713,8 @@ export default function MainContent({
               </Tooltip>
               {showTablePicker && (
                 <div
-                  className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3"
+                  style={{ position: "fixed", top: tablePickerPos.top, left: tablePickerPos.left }}
+                  className="z-50 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3"
                   onMouseLeave={() => setTableHover({ rows: 0, cols: 0 })}
                 >
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
