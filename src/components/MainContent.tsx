@@ -10,6 +10,28 @@ const Editor = dynamic(() => import("./Editor"), { ssr: false });
 
 const EMOJI_OPTIONS = ["📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥"];
 
+const AlignLeftIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
+    <rect x="0" y="0" width="13" height="2" rx="1"/>
+    <rect x="0" y="5" width="9" height="2" rx="1"/>
+    <rect x="0" y="10" width="11" height="2" rx="1"/>
+  </svg>
+);
+const AlignCenterIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
+    <rect x="0" y="0" width="13" height="2" rx="1"/>
+    <rect x="2" y="5" width="9" height="2" rx="1"/>
+    <rect x="1" y="10" width="11" height="2" rx="1"/>
+  </svg>
+);
+const AlignRightIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
+    <rect x="0" y="0" width="13" height="2" rx="1"/>
+    <rect x="4" y="5" width="9" height="2" rx="1"/>
+    <rect x="2" y="10" width="11" height="2" rx="1"/>
+  </svg>
+);
+
 const FONTS = [
   { key: "default", label: "Sans", style: "system-ui, sans-serif" },
   { key: "serif", label: "Serif", style: "Georgia, serif" },
@@ -24,12 +46,20 @@ const FONT_SIZES = [
   { key: "20", label: "20", style: "20px" },
 ];
 
+const ALIGNMENTS = [
+  { key: "left", Icon: AlignLeftIcon },
+  { key: "center", Icon: AlignCenterIcon },
+  { key: "right", Icon: AlignRightIcon },
+] as const;
+
 type Props = {
   selectedId: string | null;
   allTags: Tag[];
   onTitleChange: (id: string, title: string) => void;
   onTagsChange: (id: string, tags: Tag[]) => void;
   onSendToAI: (text: string) => void;
+  showAI: boolean;
+  onToggleAI: () => void;
 };
 
 export default function MainContent({
@@ -38,6 +68,8 @@ export default function MainContent({
   onTitleChange,
   onTagsChange,
   onSendToAI,
+  showAI,
+  onToggleAI,
 }: Props) {
   const [doc, setDoc] = useState<Document | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +77,7 @@ export default function MainContent({
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [activeFont, setActiveFont] = useState("default");
   const [activeFontSize, setActiveFontSize] = useState("16");
+  const [activeAlign, setActiveAlign] = useState<"left" | "center" | "right">("left");
   const editorRef = useRef<any>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -106,6 +139,15 @@ export default function MainContent({
     editorRef.current?.focus();
   };
 
+  const handleAlignChange = (align: "left" | "center" | "right") => {
+    setActiveAlign(align);
+    const editor = editorRef.current;
+    if (!editor) return;
+    const { block } = editor.getTextCursorPosition();
+    editor.updateBlock(block, { props: { textAlignment: align } });
+    editor.focus();
+  };
+
   const handleTagToggle = (tag: Tag) => {
     if (!doc) return;
     const has = doc.tags.some((t) => t.id === tag.id);
@@ -132,8 +174,6 @@ export default function MainContent({
   }
 
   if (!doc) return null;
-
-  const currentFont = FONTS.find((f) => f.key === activeFont) ?? FONTS[0];
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -169,7 +209,6 @@ export default function MainContent({
           value={doc.title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="Untitled"
-          style={{ fontFamily: currentFont.style }}
         />
 
         {/* Font + Size + Tags toolbar */}
@@ -205,6 +244,24 @@ export default function MainContent({
                 }`}
               >
                 {s.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Alignment */}
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+            {ALIGNMENTS.map(({ key, Icon }) => (
+              <button
+                key={key}
+                onClick={() => handleAlignChange(key)}
+                title={`Align ${key}`}
+                className={`p-1.5 rounded-md transition ${
+                  activeAlign === key
+                    ? "bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-gray-100"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                }`}
+              >
+                <Icon />
               </button>
             ))}
           </div>
@@ -256,6 +313,18 @@ export default function MainContent({
               </div>
             )}
           </div>
+          {/* AI toggle */}
+          <button
+            onClick={onToggleAI}
+            className={`ml-auto flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border transition ${
+              showAI
+                ? "bg-violet-600 text-white border-violet-600"
+                : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400"
+            }`}
+          >
+            <span>✨</span>
+            AI
+          </button>
         </div>
 
         <div className="border-b border-gray-100 dark:border-gray-800" />

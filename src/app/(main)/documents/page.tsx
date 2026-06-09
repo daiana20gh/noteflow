@@ -21,6 +21,7 @@ export default function DocumentsPage() {
   const [aiText, setAiText] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
+  const [showAI, setShowAI] = useState(false);
   const searchParams = useSearchParams();
 
   // Load tags once
@@ -99,8 +100,10 @@ export default function DocumentsPage() {
         onTitleChange={handleTitleChange}
         onTagsChange={handleTagsChange}
         onSendToAI={setAiText}
+        showAI={showAI}
+        onToggleAI={() => setShowAI((v) => !v)}
       />
-      <RightPanel initialText={aiText} onTextConsumed={() => setAiText("")} />
+      {showAI && <RightPanel initialText={aiText} onTextConsumed={() => setAiText("")} onClose={() => setShowAI(false)} />}
     </div>
   );
 }
