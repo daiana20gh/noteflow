@@ -176,7 +176,7 @@ export default function TemplatesPage() {
                   className={`object-cover ${t.imagePosition ?? "object-center"}`}
                 />
               </div>
-              <div className="p-4">
+              <div className="p-4 min-h-[80px]">
                 <p className={`font-semibold ${colors.text} group-hover:underline`}>
                   {loadingId === t.id ? "Creating…" : t.name}
                 </p>

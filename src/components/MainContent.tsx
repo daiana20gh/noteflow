@@ -18,6 +18,13 @@ const FONTS = [
   { key: "mono", label: "Mono", style: "'Courier New', monospace" },
 ];
 
+const FONT_SIZES = [
+  { key: "small", label: "S", style: "13px" },
+  { key: "medium", label: "M", style: "15px" },
+  { key: "large", label: "L", style: "18px" },
+  { key: "xlarge", label: "XL", style: "21px" },
+];
+
 type Props = {
   selectedId: string | null;
   allTags: Tag[];
@@ -26,6 +33,8 @@ type Props = {
   onSendToAI: (text: string) => void;
   globalFont: string;
   onFontChange: (font: string) => void;
+  globalFontSize: string;
+  onFontSizeChange: (size: string) => void;
 };
 
 export default function MainContent({
@@ -36,6 +45,8 @@ export default function MainContent({
   onSendToAI,
   globalFont,
   onFontChange,
+  globalFontSize,
+  onFontSizeChange,
 }: Props) {
   const [doc, setDoc] = useState<Document | null>(null);
   const [loading, setLoading] = useState(false);
@@ -120,6 +131,7 @@ export default function MainContent({
   if (!doc) return null;
 
   const currentFont = FONTS.find((f) => f.key === globalFont) ?? FONTS[0];
+  const currentSize = FONT_SIZES.find((s) => s.key === globalFontSize) ?? FONT_SIZES[1];
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -174,6 +186,23 @@ export default function MainContent({
                 style={{ fontFamily: f.style }}
               >
                 {f.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Size selector */}
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+            {FONT_SIZES.map((s) => (
+              <button
+                key={s.key}
+                onClick={() => onFontSizeChange(s.key)}
+                className={`text-xs px-2.5 py-1 rounded-md transition ${
+                  globalFontSize === s.key
+                    ? "bg-white dark:bg-gray-600 shadow-sm font-medium text-gray-900 dark:text-gray-100"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                }`}
+              >
+                {s.label}
               </button>
             ))}
           </div>
@@ -238,6 +267,7 @@ export default function MainContent({
           initialContent={(doc.content as Block[] | null) ?? undefined}
           onChange={handleContentChange}
           fontFamily={currentFont.style}
+          fontSize={currentSize.style}
         />
       </div>
 

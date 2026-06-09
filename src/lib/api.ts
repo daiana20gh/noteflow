@@ -99,18 +99,18 @@ export async function deleteEvent(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to delete event");
 }
 
-export async function getUserFont(): Promise<string> {
+export async function getUserPreferences(): Promise<{ fontFamily: string; fontSize: string }> {
   const res = await fetch("/api/user/font");
-  if (!res.ok) return "default";
+  if (!res.ok) return { fontFamily: "default", fontSize: "medium" };
   const data = await res.json();
-  return data.fontFamily ?? "default";
+  return { fontFamily: data.fontFamily ?? "default", fontSize: data.fontSize ?? "medium" };
 }
 
-export async function updateUserFont(fontFamily: string): Promise<void> {
+export async function updateUserPreferences(prefs: { fontFamily?: string; fontSize?: string }): Promise<void> {
   await fetch("/api/user/font", {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fontFamily }),
+    body: JSON.stringify(prefs),
   });
 }
 

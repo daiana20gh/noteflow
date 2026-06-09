@@ -11,9 +11,10 @@ type Props = {
   initialContent?: Block[];
   onChange: (blocks: Block[]) => void;
   fontFamily?: string;
+  fontSize?: string;
 };
 
-export default function Editor({ initialContent, onChange, fontFamily }: Props) {
+export default function Editor({ initialContent, onChange, fontFamily, fontSize }: Props) {
   const editor = useCreateBlockNote({
     initialContent: initialContent?.length ? initialContent : undefined,
   });
@@ -28,7 +29,7 @@ export default function Editor({ initialContent, onChange, fontFamily }: Props) 
   }, [editor]);
 
   return (
-    <div style={fontFamily ? { fontFamily } : undefined}>
+    <div style={{ ...(fontFamily ? { fontFamily } : {}), ...(fontSize ? { fontSize } : {}) }}>
       <BlockNoteView
         editor={editor}
         className="flex-1 min-h-0"
