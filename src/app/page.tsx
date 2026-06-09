@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth";
 import Link from "next/link";
+import Image from "next/image";
 
 const FEATURES = [
   {
@@ -33,12 +34,12 @@ const FEATURES = [
 ];
 
 const TEMPLATE_PREVIEWS = [
-  { icon: "✅", name: "Todo List", grad: "from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40" },
-  { icon: "📓", name: "Journal", grad: "from-violet-50 to-purple-100 dark:from-violet-950/40 dark:to-purple-950/40" },
-  { icon: "📋", name: "Meeting Notes", grad: "from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40" },
-  { icon: "📊", name: "Project Plan", grad: "from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40" },
-  { icon: "📚", name: "Study Notes", grad: "from-rose-50 to-pink-100 dark:from-rose-950/40 dark:to-pink-950/40" },
-  { icon: "📄", name: "Blank Page", grad: "from-gray-50 to-slate-100 dark:from-gray-900/60 dark:to-slate-900/60" },
+  { name: "Todo List", image: "/templates/todo.jpg", grad: "from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40" },
+  { name: "Journal", image: "/templates/weekly.jpg", imagePosition: "object-top", grad: "from-violet-50 to-purple-100 dark:from-gray-900 dark:to-gray-900" },
+  { name: "Meeting Notes", image: "/templates/meeting.jpg", imagePosition: "object-[center_25%]", grad: "from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40" },
+  { name: "Project Plan", image: "/templates/project.jpg", grad: "from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40" },
+  { name: "Study Notes", image: "/templates/study.jpg", grad: "from-rose-50 to-pink-100 dark:from-rose-950/40 dark:to-pink-950/40" },
+  { name: "Blank Page", image: "/templates/blank.jpg", imagePosition: "object-[center_25%]", grad: "from-gray-50 to-slate-100 dark:from-gray-900/60 dark:to-slate-900/60" },
 ];
 
 export default async function HomePage() {
@@ -138,10 +139,14 @@ export default async function HomePage() {
               <Link
                 key={t.name}
                 href={session ? "/templates" : "/try"}
-                className={`bg-gradient-to-br ${t.grad} rounded-2xl border border-gray-100 dark:border-gray-800 p-6 text-center hover:scale-[1.02] transition-transform`}
+                className={`bg-gradient-to-br ${t.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:scale-[1.02] transition-transform`}
               >
-                <span className="text-3xl block mb-2">{t.icon}</span>
-                <span className="text-sm font-medium">{t.name}</span>
+                <div className="relative w-full h-28 overflow-hidden">
+                  <Image src={t.image} alt={t.name} fill className={`object-cover ${t.imagePosition ?? "object-center"}`} />
+                </div>
+                <div className="p-4 text-center">
+                  <span className="text-sm font-medium">{t.name}</span>
+                </div>
               </Link>
             ))}
           </div>

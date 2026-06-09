@@ -112,7 +112,7 @@ const TEMPLATE_COLORS: Record<string, { grad: string; text: string }> = {
     text: "text-amber-700 dark:text-amber-300",
   },
   "weekly-journal": {
-    grad: "from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30",
+    grad: "from-violet-50 to-purple-50 dark:from-gray-900 dark:to-gray-900",
     text: "text-violet-700 dark:text-violet-300",
   },
   "todo-list": {

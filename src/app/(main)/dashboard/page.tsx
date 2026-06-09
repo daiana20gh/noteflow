@@ -1,32 +1,35 @@
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import Image from "next/image";
 
 const QUICK_START = [
   {
-    icon: "✅",
     name: "Todo List",
+    image: "/templates/todo.jpg",
     href: "/templates",
     bg: "bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60",
     text: "text-emerald-700 dark:text-emerald-300",
   },
   {
-    icon: "📓",
     name: "Journal",
+    image: "/templates/weekly.jpg",
+    imagePosition: "object-top",
     href: "/templates",
-    bg: "bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-950/60",
+    bg: "bg-violet-50 dark:bg-gray-900 hover:bg-violet-100 dark:hover:bg-gray-800",
     text: "text-violet-700 dark:text-violet-300",
   },
   {
-    icon: "📋",
     name: "Meeting Notes",
+    image: "/templates/meeting.jpg",
+    imagePosition: "object-[center_25%]",
     href: "/templates",
     bg: "bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/60",
     text: "text-blue-700 dark:text-blue-300",
   },
   {
-    icon: "📊",
     name: "Project Plan",
+    image: "/templates/project.jpg",
     href: "/templates",
     bg: "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60",
     text: "text-amber-700 dark:text-amber-300",
@@ -108,10 +111,14 @@ export default async function DashboardPage() {
               <Link
                 key={t.name}
                 href={t.href}
-                className={`${t.bg} rounded-2xl p-4 text-center transition`}
+                className={`${t.bg} rounded-2xl overflow-hidden transition`}
               >
-                <span className="text-2xl block mb-2">{t.icon}</span>
-                <span className={`text-xs font-semibold ${t.text}`}>{t.name}</span>
+                <div className="relative w-full h-24 overflow-hidden">
+                  <Image src={t.image} alt={t.name} fill className={`object-cover ${t.imagePosition ?? "object-center"}`} />
+                </div>
+                <div className="p-3 text-center">
+                  <span className={`text-xs font-semibold ${t.text}`}>{t.name}</span>
+                </div>
               </Link>
             ))}
           </div>
