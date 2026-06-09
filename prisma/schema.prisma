@@ -16,6 +16,7 @@ model User {
   verificationToken String?    @unique
   resetToken        String?    @unique
   resetTokenExpiry  DateTime?
+  fontFamily        String     @default("default")
   documents         Document[]
   tags              Tag[]
   calendarEvents    CalendarEvent[]

@@ -35,7 +35,7 @@ const FEATURES = [
 
 const TEMPLATE_PREVIEWS = [
   { name: "Todo List", image: "/templates/todo.jpg", grad: "from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40" },
-  { name: "Journal", image: "/templates/weekly.jpg", imagePosition: "object-top", grad: "from-violet-50 to-purple-100 dark:from-gray-900 dark:to-gray-900" },
+  { name: "Journal", image: "/templates/weekly.jpg", imagePosition: "object-top", grad: "from-violet-50 to-purple-100 dark:from-violet-950/10 dark:to-purple-950/10" },
   { name: "Meeting Notes", image: "/templates/meeting.jpg", imagePosition: "object-[center_25%]", grad: "from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40" },
   { name: "Project Plan", image: "/templates/project.jpg", grad: "from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40" },
   { name: "Study Notes", image: "/templates/study.jpg", grad: "from-rose-50 to-pink-100 dark:from-rose-950/40 dark:to-pink-950/40" },

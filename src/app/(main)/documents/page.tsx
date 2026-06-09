@@ -11,6 +11,8 @@ import {
   listTags,
   createTag,
   deleteTag,
+  getUserFont,
+  updateUserFont,
 } from "@/lib/api";
 import type { DocumentSummary, Tag } from "@/lib/documents";
 import { useSearchParams } from "next/navigation";
@@ -21,11 +23,18 @@ export default function DocumentsPage() {
   const [aiText, setAiText] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTagId, setSelectedTagId] = useState<string | null>(null);
+  const [globalFont, setGlobalFont] = useState("default");
   const searchParams = useSearchParams();
 
-  // Load tags once
+  // Load tags and global font once
   useEffect(() => {
     listTags().then(setTags).catch(console.error);
+    getUserFont().then(setGlobalFont).catch(console.error);
+  }, []);
+
+  const handleFontChange = useCallback(async (font: string) => {
+    setGlobalFont(font);
+    await updateUserFont(font).catch(console.error);
   }, []);
 
   // Reload documents when tag filter changes
@@ -99,6 +108,8 @@ export default function DocumentsPage() {
         onTitleChange={handleTitleChange}
         onTagsChange={handleTagsChange}
         onSendToAI={setAiText}
+        globalFont={globalFont}
+        onFontChange={handleFontChange}
       />
       <RightPanel initialText={aiText} onTextConsumed={() => setAiText("")} />
     </div>

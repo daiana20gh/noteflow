@@ -16,7 +16,7 @@ const QUICK_START = [
     image: "/templates/weekly.jpg",
     imagePosition: "object-top",
     href: "/templates",
-    bg: "bg-violet-50 dark:bg-gray-900 hover:bg-violet-100 dark:hover:bg-gray-800",
+    bg: "bg-violet-50 dark:bg-violet-950/10 hover:bg-violet-100 dark:hover:bg-violet-950/20",
     text: "text-violet-700 dark:text-violet-300",
   },
   {
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
                 href={t.href}
                 className={`${t.bg} rounded-2xl overflow-hidden transition`}
               >
-                <div className="relative w-full h-24 overflow-hidden">
+                <div className="relative w-full h-32 overflow-hidden">
                   <Image src={t.image} alt={t.name} fill className={`object-cover ${t.imagePosition ?? "object-center"}`} />
                 </div>
                 <div className="p-3 text-center">

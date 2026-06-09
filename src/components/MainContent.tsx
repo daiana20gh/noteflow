@@ -6,6 +6,8 @@ import { getDocument, updateDocument } from "@/lib/api";
 import type { Document, Tag } from "@/lib/documents";
 import type { Block } from "@blocknote/core";
 
+
+
 const Editor = dynamic(() => import("./Editor"), { ssr: false });
 
 const EMOJI_OPTIONS = ["📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥"];
@@ -22,6 +24,8 @@ type Props = {
   onTitleChange: (id: string, title: string) => void;
   onTagsChange: (id: string, tags: Tag[]) => void;
   onSendToAI: (text: string) => void;
+  globalFont: string;
+  onFontChange: (font: string) => void;
 };
 
 export default function MainContent({
@@ -30,6 +34,8 @@ export default function MainContent({
   onTitleChange,
   onTagsChange,
   onSendToAI,
+  globalFont,
+  onFontChange,
 }: Props) {
   const [doc, setDoc] = useState<Document | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,10 +88,8 @@ export default function MainContent({
     updateDocument(doc.id, { emoji }).catch(console.error);
   };
 
-  const handleFontChange = (fontFamily: string) => {
-    if (!doc) return;
-    setDoc((d) => d ? { ...d, fontFamily } : d);
-    updateDocument(doc.id, { fontFamily }).catch(console.error);
+  const handleFontChange = (fontKey: string) => {
+    onFontChange(fontKey);
   };
 
   const handleTagToggle = (tag: Tag) => {
@@ -115,7 +119,7 @@ export default function MainContent({
 
   if (!doc) return null;
 
-  const currentFont = FONTS.find((f) => f.key === doc.fontFamily) ?? FONTS[0];
+  const currentFont = FONTS.find((f) => f.key === globalFont) ?? FONTS[0];
 
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -163,7 +167,7 @@ export default function MainContent({
                 key={f.key}
                 onClick={() => handleFontChange(f.key)}
                 className={`text-xs px-2.5 py-1 rounded-md transition ${
-                  doc.fontFamily === f.key
+                  globalFont === f.key
                     ? "bg-white dark:bg-gray-600 shadow-sm font-medium text-gray-900 dark:text-gray-100"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
                 }`}
