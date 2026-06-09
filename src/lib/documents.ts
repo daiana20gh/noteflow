@@ -10,6 +10,7 @@ export type Document = {
   content: unknown[] | null;
   fontFamily: string;
   emoji: string;
+  color: string;
   tags: Tag[];
   updatedAt: string;
 };
@@ -18,6 +19,7 @@ export type DocumentSummary = {
   id: string;
   title: string;
   emoji: string;
+  color: string;
   tags: Tag[];
   updatedAt: string;
 };

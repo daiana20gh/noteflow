@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
         id: true,
         title: true,
         emoji: true,
+        color: true,
         updatedAt: true,
         tags: TAG_SELECT,
       },

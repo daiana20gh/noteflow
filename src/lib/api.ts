@@ -26,7 +26,7 @@ export async function createDocument(title = "Untitled"): Promise<DocumentSummar
 
 export async function updateDocument(
   id: string,
-  data: { title?: string; content?: unknown; tagIds?: string[]; fontFamily?: string; emoji?: string }
+  data: { title?: string; content?: unknown; tagIds?: string[]; fontFamily?: string; emoji?: string; color?: string }
 ): Promise<Document> {
   const res = await fetch(`/api/documents/${id}`, {
     method: "PUT",

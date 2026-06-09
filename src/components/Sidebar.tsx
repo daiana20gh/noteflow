@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { DocumentSummary, Tag } from "@/lib/documents";
 
 const NAV = [
@@ -46,6 +46,14 @@ export default function Sidebar({
   const [showTagForm, setShowTagForm] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState(TAG_COLORS[0]);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!confirmDeleteId) return;
+    const handler = () => setConfirmDeleteId(null);
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, [confirmDeleteId]);
 
   const handleCreateTag = () => {
     const name = newTagName.trim();
@@ -197,23 +205,45 @@ export default function Sidebar({
                 ? "bg-gray-100 dark:bg-gray-800 font-medium"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
             }`}
-            onClick={() => onSelect(doc.id)}
+            style={doc.color ? { borderLeft: `3px solid ${doc.color}`, paddingLeft: "7px" } : {}}
+            onClick={() => { setConfirmDeleteId(null); onSelect(doc.id); }}
           >
             <div className="flex items-center gap-1.5 min-w-0">
-              <span className="text-sm shrink-0">{doc.emoji}</span>
+              {doc.emoji ? (
+                <span className="text-sm shrink-0">{doc.emoji}</span>
+              ) : (
+                <span className="text-sm shrink-0 opacity-30">📄</span>
+              )}
               <span className="truncate">{doc.title || "Untitled"}</span>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               {doc.tags.slice(0, 2).map((t) => (
                 <span key={t.id} className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: t.color }} />
               ))}
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete(doc.id); }}
-                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-xs px-1"
-                title="Delete"
-              >
-                ✕
-              </button>
+              {confirmDeleteId === doc.id ? (
+                <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    onClick={() => { onDelete(doc.id); setConfirmDeleteId(null); }}
+                    className="text-[10px] px-1.5 py-0.5 rounded bg-red-500 text-white hover:bg-red-600 transition"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setConfirmDeleteId(null)}
+                    className="text-[10px] px-1.5 py-0.5 rounded border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(doc.id); }}
+                  className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 text-xs px-1"
+                  title="Delete"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           </div>
         ))}

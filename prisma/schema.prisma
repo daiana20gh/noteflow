@@ -30,6 +30,7 @@ model Document {
   content    Json?
   fontFamily String        @default("default")
   emoji      String        @default("📄")
+  color      String        @default("")
   userId     String?
   user       User?         @relation(fields: [userId], references: [id])
   tags       DocumentTag[]

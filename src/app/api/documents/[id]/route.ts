@@ -40,6 +40,7 @@ export async function PUT(request: NextRequest, { params }: Ctx) {
       ...(body.content !== undefined && { content: body.content }),
       ...(body.fontFamily !== undefined && { fontFamily: body.fontFamily }),
       ...(body.emoji !== undefined && { emoji: body.emoji }),
+      ...(body.color !== undefined && { color: body.color }),
     },
     include: { tags: TAG_SELECT },
   });

@@ -10,6 +10,18 @@ const Editor = dynamic(() => import("./Editor"), { ssr: false });
 
 const EMOJI_OPTIONS = ["📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥"];
 
+const DOC_COLORS = [
+  { key: "none", value: "" },
+  { key: "red", value: "#ef4444" },
+  { key: "orange", value: "#f97316" },
+  { key: "yellow", value: "#eab308" },
+  { key: "green", value: "#22c55e" },
+  { key: "blue", value: "#3b82f6" },
+  { key: "violet", value: "#8b5cf6" },
+  { key: "pink", value: "#ec4899" },
+  { key: "teal", value: "#14b8a6" },
+];
+
 const AlignLeftIcon = () => (
   <svg width="13" height="13" viewBox="0 0 13 13" fill="currentColor">
     <rect x="0" y="0" width="13" height="2" rx="1"/>
@@ -74,6 +86,7 @@ export default function MainContent({
   const [doc, setDoc] = useState<Document | null>(null);
   const [loading, setLoading] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [activeFont, setActiveFont] = useState("default");
   const [activeFontSize, setActiveFontSize] = useState("16");
@@ -91,7 +104,11 @@ export default function MainContent({
   }, [selectedId]);
 
   useEffect(() => {
-    const handler = () => { setShowEmojiPicker(false); setShowTagPicker(false); };
+    const handler = () => {
+      setShowEmojiPicker(false);
+      setShowColorPicker(false);
+      setShowTagPicker(false);
+    };
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
   }, []);
@@ -123,6 +140,13 @@ export default function MainContent({
     setDoc((d) => d ? { ...d, emoji } : d);
     setShowEmojiPicker(false);
     updateDocument(doc.id, { emoji }).catch(console.error);
+  };
+
+  const handleColorChange = (color: string) => {
+    if (!doc) return;
+    setDoc((d) => d ? { ...d, color } : d);
+    setShowColorPicker(false);
+    updateDocument(doc.id, { color }).catch(console.error);
   };
 
   const handleFontChange = (fontKey: string) => {
@@ -179,28 +203,90 @@ export default function MainContent({
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Document header */}
       <div className="px-16 pt-10 pb-3 space-y-3">
-        {/* Emoji picker */}
-        <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={() => { setShowEmojiPicker((v) => !v); setShowTagPicker(false); }}
-            className="text-4xl hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-1 py-0.5 transition"
-            title="Change icon"
-          >
-            {doc.emoji}
-          </button>
-          {showEmojiPicker && (
-            <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 grid grid-cols-6 gap-1">
-              {EMOJI_OPTIONS.map((e) => (
-                <button
-                  key={e}
-                  onClick={() => handleEmojiChange(e)}
-                  className={`text-xl w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition ${doc.emoji === e ? "bg-gray-100 dark:bg-gray-700" : ""}`}
-                >
-                  {e}
-                </button>
-              ))}
-            </div>
-          )}
+        {/* Emoji + Color pickers */}
+        <div className="flex items-center gap-2">
+          {/* Emoji picker */}
+          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+            {doc.emoji ? (
+              <button
+                onClick={() => { setShowEmojiPicker((v) => !v); setShowColorPicker(false); setShowTagPicker(false); }}
+                className="text-4xl hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-1 py-0.5 transition"
+                title="Change icon"
+              >
+                {doc.emoji}
+              </button>
+            ) : (
+              <button
+                onClick={() => { setShowEmojiPicker((v) => !v); setShowColorPicker(false); setShowTagPicker(false); }}
+                className="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg px-2 py-1.5 transition"
+                title="Add icon"
+              >
+                + Add icon
+              </button>
+            )}
+            {showEmojiPicker && (
+              <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 w-56">
+                {doc.emoji && (
+                  <button
+                    onClick={() => handleEmojiChange("")}
+                    className="w-full text-left text-xs px-2 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mb-1.5 transition"
+                  >
+                    ✕ Remove icon
+                  </button>
+                )}
+                <div className="grid grid-cols-6 gap-1">
+                  {EMOJI_OPTIONS.map((e) => (
+                    <button
+                      key={e}
+                      onClick={() => handleEmojiChange(e)}
+                      className={`text-xl w-9 h-9 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition ${doc.emoji === e ? "bg-gray-100 dark:bg-gray-700" : ""}`}
+                    >
+                      {e}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Color picker */}
+          <div className="relative inline-block" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => { setShowColorPicker((v) => !v); setShowEmojiPicker(false); setShowTagPicker(false); }}
+              className="w-7 h-7 rounded-full border-2 transition hover:scale-110"
+              style={
+                doc.color
+                  ? { backgroundColor: doc.color, borderColor: doc.color }
+                  : { borderColor: "#d1d5db", backgroundColor: "transparent" }
+              }
+              title="Change color"
+            >
+              {!doc.color && (
+                <span className="flex items-center justify-center w-full h-full text-gray-300 dark:text-gray-600 text-[10px]">●</span>
+              )}
+            </button>
+            {showColorPicker && (
+              <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2">
+                <div className="grid grid-cols-5 gap-1.5">
+                  {DOC_COLORS.map((c) => (
+                    <button
+                      key={c.key}
+                      onClick={() => handleColorChange(c.value)}
+                      className={`w-7 h-7 rounded-full border-2 transition hover:scale-110 ${
+                        doc.color === c.value
+                          ? "border-gray-700 dark:border-white scale-110"
+                          : "border-transparent hover:border-gray-300"
+                      } ${!c.value ? "bg-gray-100 dark:bg-gray-700 flex items-center justify-center" : ""}`}
+                      style={c.value ? { backgroundColor: c.value } : {}}
+                      title={c.key === "none" ? "No color" : c.key}
+                    >
+                      {!c.value && <span className="text-gray-400 text-[9px]">✕</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Title */}
@@ -287,7 +373,7 @@ export default function MainContent({
             {allTags.length > 0 && (
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <button
-                  onClick={() => { setShowTagPicker((v) => !v); setShowEmojiPicker(false); }}
+                  onClick={() => { setShowTagPicker((v) => !v); setShowEmojiPicker(false); setShowColorPicker(false); }}
                   className="text-xs px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
                 >
                   + tag
