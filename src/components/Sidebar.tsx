@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 import type { DocumentSummary, Tag } from "@/lib/documents";
 
 const NAV = [
-  { href: "/dashboard", icon: "🏠", label: "Dashboard" },
-  { href: "/calendar", icon: "📅", label: "Calendar" },
-  { href: "/templates", icon: "🎨", label: "Templates" },
-  { href: "/contact", icon: "✉️", label: "Contact" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/calendar", label: "Calendar" },
+  { href: "/templates", label: "Templates" },
+  { href: "/contact", label: "Contact" },
 ];
 
 const TAG_COLORS = [
@@ -72,7 +72,6 @@ export default function Sidebar({
     <div className="w-64 h-full bg-white dark:bg-[#111] border-r border-gray-200 dark:border-gray-800 flex flex-col">
       <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-800">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <span className="text-xl">✨</span>
           <span className="text-lg font-bold">NoteFlow</span>
         </Link>
       </div>
@@ -83,13 +82,12 @@ export default function Sidebar({
           <Link
             key={item.href}
             href={item.href}
-            className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition ${
+            className={`flex items-center px-3 py-1.5 rounded-lg text-sm transition ${
               pathname.startsWith(item.href)
                 ? "bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-300 font-medium"
                 : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-100"
             }`}
           >
-            <span className="text-sm">{item.icon}</span>
             {item.label}
           </Link>
         ))}
