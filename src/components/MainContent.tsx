@@ -220,8 +220,8 @@ export default function MainContent({
     updateDocument(doc.id, { color }).catch(console.error);
   };
 
-  // Display tags: use syncedTags (updated from sidebar) as source of truth
-  const displayTags = syncedTags.length > 0 || doc ? syncedTags : (doc?.tags ?? []);
+  // syncedTags always reflects the latest state from the parent (derived from documents list)
+  const displayTags: Tag[] = syncedTags;
 
   const handleTagToggle = (tag: Tag) => {
     if (!doc) return;
