@@ -10,7 +10,12 @@ const Editor = dynamic(() => import("./Editor"), { ssr: false });
 
 // ─── Inline constants ─────────────────────────────────────────────────────────
 
-const EMOJI_OPTIONS = ["📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥"];
+const EMOJI_OPTIONS = [
+  "📄", "📝", "📌", "💡", "🚀", "🎯", "🔖", "📊", "🗒️", "✅", "🌟", "🔥",
+  "📚", "🎨", "💻", "🎵", "🏆", "💼", "🌍", "🔬", "📅", "💬", "🎤", "🧠",
+  "🌈", "🏖️", "🎸", "🍕", "🚂", "🦁", "🐉", "🌸", "⭐", "🎃", "🧩", "💎",
+  "🔑", "🎭", "🧪", "🌙", "☀️", "🏔️", "🎲", "🛸", "🦋", "🎀", "🍀", "🔮",
+];
 
 const DOC_COLORS = [
   { key: "none", value: "" },
@@ -22,6 +27,22 @@ const DOC_COLORS = [
   { key: "violet", value: "#8b5cf6" },
   { key: "pink", value: "#ec4899" },
   { key: "teal", value: "#14b8a6" },
+  { key: "white", value: "#ffffff" },
+  { key: "black", value: "#111111" },
+];
+
+const TEXT_COLORS = [
+  { key: "default", label: "Default", value: "default" },
+  { key: "red", label: "Red", value: "#ef4444" },
+  { key: "orange", label: "Orange", value: "#f97316" },
+  { key: "yellow", label: "Yellow", value: "#ca8a04" },
+  { key: "green", label: "Green", value: "#16a34a" },
+  { key: "blue", label: "Blue", value: "#2563eb" },
+  { key: "violet", label: "Violet", value: "#7c3aed" },
+  { key: "pink", label: "Pink", value: "#db2777" },
+  { key: "gray", label: "Gray", value: "#6b7280" },
+  { key: "black", label: "Black", value: "#111111" },
+  { key: "white", label: "White", value: "#f9fafb" },
 ];
 
 const FONTS = [
@@ -120,6 +141,7 @@ export default function MainContent({
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [showTablePicker, setShowTablePicker] = useState(false);
   const [tableHover, setTableHover] = useState({ rows: 0, cols: 0 });
+  const [showTextColorPicker, setShowTextColorPicker] = useState(false);
 
   // Ribbon active state
   const [activeStyles, setActiveStyles] = useState<Record<string, any>>({});
@@ -177,6 +199,7 @@ export default function MainContent({
       setShowColorPicker(false);
       setShowTagPicker(false);
       setShowTablePicker(false);
+      setShowTextColorPicker(false);
     };
     document.addEventListener("click", handler);
     return () => document.removeEventListener("click", handler);
@@ -253,6 +276,18 @@ export default function MainContent({
     setActiveFontSize(sizeKey);
     editorRef.current?.addStyles({ fontSize: size.style });
     editorRef.current?.focus();
+  };
+
+  const handleTextColorChange = (color: string) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    if (color === "default") {
+      editor.addStyles({ textColor: false as any });
+    } else {
+      editor.addStyles({ textColor: color });
+    }
+    editor.focus();
+    setShowTextColorPicker(false);
   };
 
   const handleAlignChange = (align: "left" | "center" | "right") => {
@@ -355,7 +390,7 @@ export default function MainContent({
               </button>
             )}
             {showEmojiPicker && (
-              <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 w-56">
+              <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 w-72">
                 {doc.emoji && (
                   <button
                     onClick={() => handleEmojiChange("")}
@@ -364,7 +399,7 @@ export default function MainContent({
                     ✕ Remove icon
                   </button>
                 )}
-                <div className="grid grid-cols-6 gap-1">
+                <div className="grid grid-cols-8 gap-1">
                   {EMOJI_OPTIONS.map((e) => (
                     <button
                       key={e}
@@ -395,7 +430,7 @@ export default function MainContent({
             </Tooltip>
             {showColorPicker && (
               <div className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2">
-                <div className="grid grid-cols-5 gap-1.5">
+                <div className="grid grid-cols-4 gap-1.5">
                   {DOC_COLORS.map((c) => (
                     <Tooltip key={c.key} label={c.key === "none" ? "No color" : c.key}>
                       <button
@@ -440,20 +475,22 @@ export default function MainContent({
             </button>
           ))}
 
-          {allTags.length > 0 && (
-            <div className="relative" onClick={(e) => e.stopPropagation()}>
-              <button
-                onClick={(e) => { e.stopPropagation(); setShowTagPicker((v) => !v); }}
-                className="text-xs px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowTagPicker((v) => !v); }}
+              className="text-xs px-2 py-0.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+            >
+              + tag
+            </button>
+            {showTagPicker && (
+              <div
+                className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 min-w-40 space-y-0.5"
+                onClick={(e) => e.stopPropagation()}
               >
-                + tag
-              </button>
-              {showTagPicker && (
-                <div
-                  className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2 min-w-36 space-y-0.5"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {allTags.map((tag) => {
+                {allTags.length === 0 ? (
+                  <p className="text-xs text-gray-400 px-2 py-1">No tags — create one in the sidebar</p>
+                ) : (
+                  allTags.map((tag) => {
                     const active = displayTags.some((t) => t.id === tag.id);
                     return (
                       <button
@@ -466,11 +503,11 @@ export default function MainContent({
                         {active && <span className="ml-auto text-[10px] text-gray-400">✓</span>}
                       </button>
                     );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+                  })
+                )}
+              </div>
+            )}
+          </div>
 
           <button
             onClick={onToggleAI}
@@ -511,6 +548,47 @@ export default function MainContent({
                 <span className="line-through text-sm">S</span>
               </RibbonBtn>
             </Tooltip>
+            <div className="relative" onClick={(e) => e.stopPropagation()}>
+              <Tooltip label="Text color">
+                <RibbonBtn
+                  onClick={(e) => { e.stopPropagation(); setShowTextColorPicker((v) => !v); setShowTablePicker(false); }}
+                  active={showTextColorPicker}
+                >
+                  <span className="flex flex-col items-center justify-center leading-none gap-0.5">
+                    <span className="text-sm font-bold">A</span>
+                    <span
+                      className="block w-4 h-0.5 rounded"
+                      style={{ backgroundColor: (activeStyles.textColor && activeStyles.textColor !== "default") ? activeStyles.textColor : "#6b7280" }}
+                    />
+                  </span>
+                </RibbonBtn>
+              </Tooltip>
+              {showTextColorPicker && (
+                <div
+                  className="absolute top-full left-0 mt-1 z-30 bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-2"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="grid grid-cols-4 gap-1.5">
+                    {TEXT_COLORS.map((c) => (
+                      <Tooltip key={c.key} label={c.label}>
+                        <button
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => handleTextColorChange(c.value)}
+                          className={`w-7 h-7 rounded-full border-2 transition hover:scale-110 flex items-center justify-center ${
+                            activeStyles.textColor === c.value
+                              ? "border-gray-700 dark:border-white scale-110"
+                              : "border-transparent hover:border-gray-300"
+                          }`}
+                          style={c.key === "default" ? { background: "linear-gradient(135deg, #e5e7eb 50%, #9ca3af 50%)" } : { backgroundColor: c.value, ...(c.key === "white" ? { border: "1px solid #d1d5db" } : {}) }}
+                        >
+                          {c.key === "default" && <span className="text-[8px] text-gray-700 font-bold">A</span>}
+                        </button>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </RibbonGroup>
 
           {/* Block: Paragraph / H1 / H2 / H3 / Bullet / Numbered / Checklist */}
