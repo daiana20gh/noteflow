@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createDocument } from "@/lib/api";
 
 const TEMPLATES = [
   {
     id: "meeting-notes",
     icon: "📋",
+    image: "/templates/meeting.jpg",
     name: "Meeting Notes",
     description: "Structure your meeting discussions and action items",
     grad: "from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
@@ -26,6 +28,7 @@ const TEMPLATES = [
   {
     id: "project-plan",
     icon: "📊",
+    image: "/templates/project.jpg",
     name: "Project Plan",
     description: "Plan your project milestones and deliverables",
     content: [
@@ -41,6 +44,7 @@ const TEMPLATES = [
   {
     id: "weekly-journal",
     icon: "📓",
+    image: "/templates/journal.jpg",
     name: "Weekly Journal",
     description: "Reflect on your week and plan ahead",
     content: [
@@ -56,6 +60,7 @@ const TEMPLATES = [
   {
     id: "todo-list",
     icon: "✅",
+    image: "/templates/todo.jpg",
     name: "Todo List",
     description: "Keep track of tasks and priorities",
     content: [
@@ -71,6 +76,7 @@ const TEMPLATES = [
   {
     id: "study-notes",
     icon: "📚",
+    image: "/templates/study.jpg",
     name: "Study Notes",
     description: "Organize your learning and key concepts",
     content: [
@@ -86,6 +92,7 @@ const TEMPLATES = [
   {
     id: "blank",
     icon: "📄",
+    image: "/templates/blank.jpg",
     name: "Blank Page",
     description: "Start from scratch with an empty page",
     content: [],
@@ -156,13 +163,22 @@ export default function TemplatesPage() {
               key={t.id}
               onClick={() => handleUseTemplate(t)}
               disabled={loadingId !== null}
-              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 p-6 text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait`}
+              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait`}
             >
-              <span className="text-3xl mb-3 block">{loadingId === t.id ? "⏳" : t.icon}</span>
-              <p className={`font-semibold ${colors.text} group-hover:underline`}>
-                {loadingId === t.id ? "Creating…" : t.name}
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>
+              <div className="relative w-full h-36">
+                <Image
+                  src={t.image}
+                  alt={t.name}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="p-4">
+                <p className={`font-semibold ${colors.text} group-hover:underline`}>
+                  {loadingId === t.id ? "Creating…" : t.name}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>
+              </div>
             </button>
           );
         })}
