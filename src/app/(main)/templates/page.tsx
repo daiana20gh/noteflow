@@ -10,6 +10,7 @@ const TEMPLATES = [
     id: "meeting-notes",
     icon: "📋",
     image: "/templates/meeting.jpg",
+    imagePosition: "object-top",
     name: "Meeting Notes",
     description: "Structure your meeting discussions and action items",
     grad: "from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30",
@@ -93,6 +94,7 @@ const TEMPLATES = [
     id: "blank",
     icon: "📄",
     image: "/templates/blank.jpg",
+    imagePosition: "object-top",
     name: "Blank Page",
     description: "Start from scratch with an empty page",
     content: [],
@@ -165,12 +167,12 @@ export default function TemplatesPage() {
               disabled={loadingId !== null}
               className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait`}
             >
-              <div className="relative w-full h-36">
+              <div className="relative w-full h-36 overflow-hidden">
                 <Image
                   src={t.image}
                   alt={t.name}
                   fill
-                  className="object-cover"
+                  className={`object-cover ${t.imagePosition ?? "object-center"}`}
                 />
               </div>
               <div className="p-4">
