@@ -6,14 +6,14 @@ import Image from "next/image";
 const QUICK_START = [
   {
     name: "Todo List",
-    image: "/templates/todo.jpg",
+    image: "/templates/todo.png",
     href: "/templates",
     bg: "bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60",
     text: "text-emerald-700 dark:text-emerald-300",
   },
   {
     name: "Journal",
-    image: "/templates/weekly.jpg",
+    image: "/templates/weekly.png",
     imagePosition: "object-top",
     href: "/templates",
     bg: "bg-violet-50 dark:bg-violet-950/10 hover:bg-violet-100 dark:hover:bg-violet-950/20",
@@ -21,7 +21,7 @@ const QUICK_START = [
   },
   {
     name: "Meeting Notes",
-    image: "/templates/meeting.jpg",
+    image: "/templates/meeting.png",
     imagePosition: "object-[center_25%]",
     href: "/templates",
     bg: "bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/60",
@@ -29,7 +29,7 @@ const QUICK_START = [
   },
   {
     name: "Project Plan",
-    image: "/templates/project.jpg",
+    image: "/templates/project.png",
     href: "/templates",
     bg: "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60",
     text: "text-amber-700 dark:text-amber-300",

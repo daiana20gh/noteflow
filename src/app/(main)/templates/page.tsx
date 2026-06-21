@@ -9,7 +9,7 @@ const TEMPLATES = [
   {
     id: "meeting-notes",
     icon: "📋",
-    image: "/templates/meeting.jpg",
+    image: "/templates/meeting.png",
     imagePosition: "object-[center_25%]",
     name: "Meeting Notes",
     description: "Structure your meeting discussions and action items",
@@ -36,7 +36,7 @@ const TEMPLATES = [
   {
     id: "project-plan",
     icon: "📊",
-    image: "/templates/project.jpg",
+    image: "/templates/project.png",
     name: "Project Plan",
     description: "Plan your project milestones and deliverables",
     content: [
@@ -64,7 +64,7 @@ const TEMPLATES = [
   {
     id: "weekly-journal",
     icon: "📓",
-    image: "/templates/weekly.jpg",
+    image: "/templates/weekly.png",
     imagePosition: "object-top",
     name: "Weekly Journal",
     description: "Reflect on your week, track habits, and plan ahead",
@@ -99,7 +99,7 @@ const TEMPLATES = [
   {
     id: "todo-list",
     icon: "✅",
-    image: "/templates/todo.jpg",
+    image: "/templates/todo.png",
     name: "Todo List",
     description: "Prioritize tasks by urgency across today, this week, and backlog",
     content: [
@@ -122,7 +122,7 @@ const TEMPLATES = [
   {
     id: "study-notes",
     icon: "📚",
-    image: "/templates/study.jpg",
+    image: "/templates/study.png",
     name: "Study Notes",
     description: "Capture key concepts, examples, and review questions",
     content: [
@@ -150,7 +150,7 @@ const TEMPLATES = [
   {
     id: "blank",
     icon: "📄",
-    image: "/templates/blank.jpg",
+    image: "/templates/blank.png",
     imagePosition: "object-[center_25%]",
     name: "Blank Page",
     description: "Start from scratch with an empty page",

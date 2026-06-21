@@ -10,6 +10,9 @@ const PUBLIC_PATHS = ["/login", "/register", "/contact", "/api/auth"];
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Allow static files (images, fonts, etc.) through without auth
+  if (/\.[^/]+$/.test(pathname)) return NextResponse.next();
+
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
   if (isPublic) return NextResponse.next();
 
