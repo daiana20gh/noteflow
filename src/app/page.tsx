@@ -50,12 +50,12 @@ const FEATURES = [
 ];
 
 const TEMPLATE_PREVIEWS = [
-  { name: "Todo List", image: "/templates/todo.png", grad: "from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40" },
-  { name: "Journal", image: "/templates/weekly.png", imagePosition: "object-top", grad: "from-violet-50 to-purple-100 dark:from-violet-950/10 dark:to-purple-950/10" },
-  { name: "Meeting Notes", image: "/templates/meeting.png", imagePosition: "object-[center_25%]", grad: "from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40" },
-  { name: "Project Plan", image: "/templates/project.png", grad: "from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40" },
-  { name: "Study Notes", image: "/templates/study.png", grad: "from-rose-50 to-pink-100 dark:from-rose-950/40 dark:to-pink-950/40" },
-  { name: "Blank Page", image: "/templates/blank.png", imagePosition: "object-[center_25%]", grad: "from-gray-50 to-slate-100 dark:from-gray-900/60 dark:to-slate-900/60" },
+  { name: "Todo List", image: "/templates/todo.png", imgClass: "object-cover object-center", grad: "from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40" },
+  { name: "Journal", image: "/templates/weekly.png", imgClass: "object-cover object-center", grad: "from-violet-50 to-purple-100 dark:from-violet-950/10 dark:to-purple-950/10" },
+  { name: "Meeting Notes", image: "/templates/meeting.png", imgClass: "object-cover object-center", grad: "from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40" },
+  { name: "Project Plan", image: "/templates/project.png", imgClass: "object-cover object-center", grad: "from-amber-50 to-orange-100 dark:from-amber-950/40 dark:to-orange-950/40" },
+  { name: "Study Notes", image: "/templates/study.png", imgClass: "object-cover object-center", grad: "from-rose-50 to-pink-100 dark:from-rose-950/40 dark:to-pink-950/40" },
+  { name: "Blank Page", image: "/templates/blank.png", imgClass: "object-cover object-[center_30%]", grad: "from-gray-50 to-slate-100 dark:from-gray-900/60 dark:to-slate-900/60" },
 ];
 
 export default async function HomePage() {
@@ -157,8 +157,8 @@ export default async function HomePage() {
                 href={session ? "/templates" : "/try"}
                 className={`bg-gradient-to-br ${t.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:scale-[1.02] transition-transform`}
               >
-                <div className="relative w-full h-28 overflow-hidden">
-                  <Image src={t.image} alt={t.name} fill className={`object-cover ${t.imagePosition ?? "object-center"}`} />
+                <div className="relative w-full h-44 overflow-hidden">
+                  <Image src={t.image} alt={t.name} fill sizes="(max-width: 640px) 50vw, 33vw" className={t.imgClass} />
                 </div>
                 <div className="p-4 text-center">
                   <span className="text-sm font-medium">{t.name}</span>

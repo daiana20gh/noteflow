@@ -10,7 +10,6 @@ const TEMPLATES = [
     id: "meeting-notes",
     icon: "📋",
     image: "/templates/meeting.png",
-    imagePosition: "object-[center_25%]",
     name: "Meeting Notes",
     description: "Structure your meeting discussions and action items",
     content: [
@@ -65,7 +64,6 @@ const TEMPLATES = [
     id: "weekly-journal",
     icon: "📓",
     image: "/templates/weekly.png",
-    imagePosition: "object-top",
     name: "Weekly Journal",
     description: "Reflect on your week, track habits, and plan ahead",
     content: [
@@ -151,7 +149,6 @@ const TEMPLATES = [
     id: "blank",
     icon: "📄",
     image: "/templates/blank.png",
-    imagePosition: "object-[center_25%]",
     name: "Blank Page",
     description: "Start from scratch with an empty page",
     content: [],
@@ -210,7 +207,8 @@ export default function TemplatesPage() {
   };
 
   return (
-    <div className="h-full overflow-y-auto p-8 max-w-5xl mx-auto w-full">
+    <div className="h-full overflow-y-auto">
+      <div className="p-8 max-w-5xl mx-auto w-full">
       <h1 className="text-3xl font-bold mb-1">Templates</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">Pick a template to get started quickly.</p>
 
@@ -222,25 +220,27 @@ export default function TemplatesPage() {
               key={t.id}
               onClick={() => handleUseTemplate(t)}
               disabled={loadingId !== null}
-              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait flex flex-col`}
+              className={`bg-gradient-to-br ${colors.grad} rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden text-left hover:scale-[1.02] hover:shadow-md transition group disabled:opacity-60 disabled:cursor-wait flex flex-col h-[336px]`}
             >
-              <div className="relative w-full h-36 overflow-hidden">
+              <div className="relative w-full h-56 shrink-0 overflow-hidden">
                 <Image
                   src={t.image}
                   alt={t.name}
                   fill
-                  className={`object-cover ${t.imagePosition ?? "object-center"}`}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className={`object-cover ${t.id === "blank" ? "object-[center_30%]" : "object-center"}`}
                 />
               </div>
-              <div className="p-4 flex-1">
+              <div className="p-4 flex-1 min-h-0">
                 <p className={`font-semibold ${colors.text} group-hover:underline`}>
                   {loadingId === t.id ? "Creating…" : t.name}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{t.description}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{t.description}</p>
               </div>
             </button>
           );
         })}
+      </div>
       </div>
     </div>
   );

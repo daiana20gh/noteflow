@@ -7,6 +7,7 @@ const QUICK_START = [
   {
     name: "Todo List",
     image: "/templates/todo.png",
+    imgClass: "object-cover object-center",
     href: "/templates",
     bg: "bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 dark:hover:bg-emerald-950/60",
     text: "text-emerald-700 dark:text-emerald-300",
@@ -14,7 +15,7 @@ const QUICK_START = [
   {
     name: "Journal",
     image: "/templates/weekly.png",
-    imagePosition: "object-top",
+    imgClass: "object-cover object-center",
     href: "/templates",
     bg: "bg-violet-50 dark:bg-violet-950/10 hover:bg-violet-100 dark:hover:bg-violet-950/20",
     text: "text-violet-700 dark:text-violet-300",
@@ -22,7 +23,7 @@ const QUICK_START = [
   {
     name: "Meeting Notes",
     image: "/templates/meeting.png",
-    imagePosition: "object-[center_25%]",
+    imgClass: "object-cover object-center",
     href: "/templates",
     bg: "bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-950/60",
     text: "text-blue-700 dark:text-blue-300",
@@ -30,6 +31,7 @@ const QUICK_START = [
   {
     name: "Project Plan",
     image: "/templates/project.png",
+    imgClass: "object-cover object-center",
     href: "/templates",
     bg: "bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60",
     text: "text-amber-700 dark:text-amber-300",
@@ -114,7 +116,7 @@ export default async function DashboardPage() {
                 className={`${t.bg} rounded-2xl overflow-hidden transition`}
               >
                 <div className="relative w-full h-44 overflow-hidden">
-                  <Image src={t.image} alt={t.name} fill className="object-contain object-top" />
+                  <Image src={t.image} alt={t.name} fill sizes="(max-width: 640px) 50vw, 25vw" className={t.imgClass} />
                 </div>
                 <div className="p-3 text-center">
                   <span className={`text-xs font-semibold ${t.text}`}>{t.name}</span>
